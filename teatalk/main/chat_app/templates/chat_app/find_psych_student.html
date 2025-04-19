@@ -1,0 +1,463 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Psychology Student - TeaTalk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            color: var(--primary-blue);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-role {
+            background-color: rgba(0, 112, 243, 0.1);
+            color: var(--primary-blue);
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+        }
+
+        .main-header {
+            margin-bottom: 25px;
+        }
+
+        .main-header h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .main-header p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .sort-section {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .sort-btn:hover {
+            background-color: #f5f5f5;
+            color: var(--primary-blue);
+        }
+        
+        .sort-direction {
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        .students-list {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .student-card {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .student-card:last-child {
+            border-bottom: none;
+        }
+        
+        .student-info h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .student-info p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .expertise-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .expertise-list li {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .last-activity {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .start-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-width: 160px;
+            text-align: center;
+        }
+        
+        .start-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 112, 243, 0.4);
+        }
+        
+        .no-results {
+            padding: 30px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background: #fff;
+            margin: 15% auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .close {
+            color: #888;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .modal-content h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .modal-content p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-height: 120px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 112, 243, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <!-- Header with Logo and User Info -->
+            <div class="header">
+                <div class="logo">
+                    <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">TeaTalk</a>
+                </div>
+                <div class="user-info">
+                    <div class="user-role">
+                        <i class="fas fa-user-shield"></i>
+                        <span>{{ user.profile.role|default:"Student" }}</span>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">
+                        <span>Logout</span>
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Back to Dashboard link positioned below logo -->
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'home' %}" class="logout-btn" style="display: inline-flex; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    <span style="margin-left: 5px;">Back to Main Page</span>
+                </a>
+            </div>
+            
+            <div class="main-header">
+                <h2>Find a Psychology Student for Consultation</h2>
+                <p>Browse the list of available psychology students and start a consultation</p>
+            </div>
+            
+            <div class="filter-section">
+                <div class="sort-section">
+                    <button id="sortByYearBtn" class="sort-btn">
+                        <i class="fas fa-sort"></i> Sort by Study Year
+                        <span id="sortDirection"></span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="students-list">
+                {% if psych_students %}
+                    {% for student in psych_students %}
+                    <div class="student-card">
+                        <div class="student-info">
+                            <h3>Psychology Student #{{ student.user_profile.anonymous_id }}</h3>
+                            <p><strong>Year of Study:</strong> {{ student.school_year }}</p>
+                            <p><strong>Last Activity:</strong> {% if student.user_profile.last_login %}{{ student.user_profile.last_login|timesince }} ago{% else %}No activity yet{% endif %}</p>
+                            
+                            {% if student.expertise_areas.all %}
+                            <p><strong>Specializations:</strong></p>
+                            <ul class="expertise-list">
+                                {% for area in student.expertise_areas.all %}
+                                <li>{{ area.name }}</li>
+                                
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p><strong>Specializations:</strong> None specified</p>
+                            {% endif %}
+                            
+                            {% if student.bio %}
+                            <p><strong>About:</strong> {{ student.bio }}</p>
+                            {% endif %}
+                        </div>
+                        <button class="start-chat-btn" onclick="openRequestModal({{ student.user_profile.id }})">
+                            <i class="fas fa-comment"></i> Send Request
+                        </button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-results">
+                        <p>No psychology students match your criteria.</p>
+                        <p>Try changing your filters or check back later.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Request Modal -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Send Request</h3>
+            <p>Briefly describe what you'd like to discuss with the psychology student:</p>
+            <form id="requestForm" method="post" action="{% url 'send_request' %}">
+                {% csrf_token %}
+                <input type="hidden" id="student_id" name="student_id" value="">
+                <textarea id="issue_description" name="issue_description" placeholder="E.g., I've been feeling anxious about school lately..." required></textarea>
+                <button type="submit" class="btn-submit">Send Request</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Logout button functionality
+            var logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    window.location.href = "{% url 'logout' %}";
+                });
+            }
+            
+            // Sorting functionality
+            var sortByYearBtn = document.getElementById('sortByYearBtn');
+            var sortDirection = document.getElementById('sortDirection');
+            var isDescending = true; // Start with highest to lowest
+            
+            if (sortByYearBtn) {
+                sortByYearBtn.addEventListener('click', function() {
+                    // Toggle sort direction
+                    isDescending = !isDescending;
+                    
+                    // Update the sort direction indicator
+                    sortDirection.innerHTML = isDescending ? 
+                        '<span class="sort-direction">▼ High to Low</span>' : 
+                        '<span class="sort-direction">▲ Low to High</span>';
+                    
+                    // Get all student cards
+                    var studentsList = document.querySelector('.students-list');
+                    var studentCards = Array.from(studentsList.querySelectorAll('.student-card'));
+                    
+                    // Sort the student cards based on year
+                    studentCards.sort(function(a, b) {
+                        var yearA = parseInt(a.querySelector('.student-info p:nth-child(2)').textContent.match(/\d+/)[0]);
+                        var yearB = parseInt(b.querySelector('.student-info p:nth-child(2)').textContent.match(/\d+/)[0]);
+                        
+                        if (isDescending) {
+                            return yearB - yearA; // Highest to lowest
+                        } else {
+                            return yearA - yearB; // Lowest to highest
+                        }
+                    });
+                    
+                    // Remove all current cards
+                    studentCards.forEach(function(card) {
+                        card.remove();
+                    });
+                    
+                    // Add sorted cards back to the list
+                    studentCards.forEach(function(card) {
+                        studentsList.appendChild(card);
+                    });
+                });
+                
+                // Initialize sort direction indicator
+                sortDirection.innerHTML = '<span class="sort-direction">▼ High to Low</span>';
+            }
+            
+            // Modal functionality
+            var modal = document.getElementById('requestModal');
+            var span = document.getElementsByClassName("close")[0];
+            
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+            
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        });
+        
+        // Function to open the modal and set the student ID
+        function openRequestModal(studentId) {
+            var modal = document.getElementById('requestModal');
+            document.getElementById('student_id').value = studentId;
+            modal.style.display = "block";
+        }
+    </script>
+    
+</body>
+</html> 

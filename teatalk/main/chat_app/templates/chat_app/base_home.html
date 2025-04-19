@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TeaTalk - Dashboard{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen font-inter">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-teal-600 text-xl font-bold">PsychChat</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-xs font-medium mr-4">
+                        <i class="fas fa-user-shield mr-1"></i>
+                        <span id="userRole">{{ user.profile.role }}</span>
+                    </div>
+                    <button id="logoutBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center">
+                        <span class="mr-2 text-sm">Logout</span>
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block anonymity_banner %}
+        <!-- Anonymity Banner -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-md">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-shield-alt text-blue-500"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">Anonymous Consultations</h3>
+                    <div class="mt-1 text-sm text-blue-700">
+                        All conversations on PsychChat are completely anonymous. Your identity is never revealed to other users.
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        <!-- Main Dashboard Content -->
+        {% block main_content %}{% endblock %}
+    </div>
+
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    {% block scripts %}
+    <script>
+        // Logout button functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Properly log out by calling Django's logout URL
+            window.location.href = "{% url 'logout' %}";
+        });
+    </script>
+    {% endblock %}
+</body>
+</html> 

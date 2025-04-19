@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TeaTalk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .field-error {
+            border-color: #ff4d4f !important;
+            box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+        }
+        
+        .error-text {
+            color: #ff4d4f;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+        .error-icon {
+            display: block;
+            margin-top: 4px;
+            color: #ff4d4f;
+        }   
+        
+        .form-error-message {
+            background-color: rgba(255, 77, 79, 0.1);
+            border-left: 3px solid #ff4d4f;
+            color: #ff4d4f;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .input-with-error {
+            position: relative;
+        }
+        
+        .input-with-error i.error-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff4d4f;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <h1>Login</h1>
+            
+            {% if messages %}
+            <div class="form-error-message">
+                {% for message in messages %}
+                <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="post" action="{% url 'login_view' %}" id="loginForm">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <label for="username">E-mail</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" placeholder="Type your email" required
+                        class="{% if form.username.errors %}field-error{% endif %}" value="{{ form.username.value|default:'' }}">
+                    </div>
+                    {% if form.username.errors %}
+                    <i class="fas fa-exclamation-circle error-icon"></i>
+                    <span class="error-text">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="input-group">
+                    <div class="label-with-link">
+                        <label for="password">Password</label>
+                        <a href="{% url 'password_reset' %}" class="forgot-link">Forgot password?</a>
+                    </div>
+                    <div class="input-with-icon {% if form.password.errors %}input-with-error{% endif %}">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Type your password" required
+                               class="{% if form.password.errors %}field-error{% endif %}">
+                        {% if form.password.errors %}
+                        <i class="fas fa-exclamation-circle error-icon"></i>
+                        {% endif %}
+                    </div>
+                    {% if form.password.errors %}
+                    <span class="error-text">{{ form.password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                {% if form.non_field_errors %}
+                <div class="error-text" style="margin-bottom: 15px; text-align: center;">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn-login">LOGIN</button>
+                
+                <div class="signup-link">
+                    <span>Don't have an account?</span>
+                    <a href="{% url 'register' %}">SIGN UP</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+</body>
+</html>

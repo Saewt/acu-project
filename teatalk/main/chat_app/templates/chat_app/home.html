@@ -1,0 +1,41 @@
+{% load static %}
+{% if user.profile.role == 'Student' %}
+    {% include 'chat_app/student_home.html' %}
+{% elif user.profile.role == 'PsychologyStudent' %}
+    {% include 'chat_app/psychology_student_home.html' %}
+{% elif user.profile.role == 'Supervisor' %}
+    {% include 'chat_app/supervisor_home.html' %}
+{% else %}
+    <!-- Fallback to default template in case of unknown role -->
+    {% include 'chat_app/student_home.html' %}
+{% endif %}
+
+            
+                            
+                
+
+            <!-- Completed Conversations -->
+            {% if ended_conversations %}
+            <div class="mt-8">
+                <h2 class="text-lg font-semibold mb-4">Completed Conversations</h2>
+                
+                <div class="space-y-3">
+                    {% for conversation in ended_conversations %}
+                    <a href="{% url 'chat_with_id' conversation_id=conversation.id %}" class="block bg-white rounded-lg shadow hover:shadow-md transition p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-medium">Anonymous Consultation #{{ conversation.id }}</div>
+                                <div class="text-sm text-gray-500">
+                                    Ended: {{ conversation.last_message_time|date:"F j, Y" }}
+                                </div>
+                            </div>
+                            
+                            <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                                Completed
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}

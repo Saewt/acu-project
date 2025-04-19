@@ -1,0 +1,174 @@
+<!-- register.html to do:
+ add a document field for psych students for verification
+ supervisor verification will be done by admin-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TeaTalk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .input-group {
+            flex: 1;
+        }
+        
+        .compact-form .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .compact-form label {
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        
+        .compact-form .help-text {
+            margin-top: 2px;
+        }
+        
+        .compact-form .privacy-notice {
+            margin-top: 15px;
+            padding: 8px;
+        }
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+        .custom-select select {
+            appearance: none;
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        .custom-select i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a90e2;
+            pointer-events: none;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <h1>Create Account</h1>
+            
+            {% if form.errors %}
+            <div class="error-container">
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <form method="post" id="registerForm" class="compact-form">
+                {% csrf_token %}
+                
+                <!-- Name fields in one row -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="first_name">First Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user-edit"></i>
+                            <input type="text" id="first_name" name="first_name" placeholder="First name" required value="{{ form.first_name.value|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="last_name">Last Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user-edit"></i>
+                            <input type="text" id="last_name" name="last_name" placeholder="Last name" required value="{{ form.last_name.value|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="email">Email (@live.acibadem.edu.tr)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="username@live.acibadem.edu.tr" required value="{{ form.email.value|default:'' }}">
+                    </div>
+                    <div class="help-text">
+                        <p>Email must end with @live.acibadem.edu.tr</p>
+                    </div>
+                </div>
+                
+                <!-- Password fields in one row -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Create password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password2">Confirm Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password2" name="password2" placeholder="Confirm password" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="role">Your Role</label>
+                    <div class="custom-select">
+                        <select id="role" name="role" required>
+                            <option value="" disabled {% if not form.role.value %}selected{% endif %}>Select your role</option>
+                            <option value="student" data-icon="fas fa-user-graduate" {% if form.role.value == 'student' %}selected{% endif %}>Student</option>
+                            <option value="psych_student" data-icon="fas fa-brain " {% if form.role.value == 'psych_student' %}selected{% endif %}>Psychology Student</option>
+                            <option value="supervisor" data-icon="fas fa-user-tie" {% if form.role.value == 'supervisor' %}selected{% endif %}>Supervisor</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login">REGISTER</button>
+                
+                <div class="signup-link">
+                    <span>Already have an account?</span>
+                    <a href="{% url 'login_view' %}">LOGIN</a>
+                </div>
+                
+                <div class="privacy-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <p><strong>Privacy:</strong> All your information is fully anonymous, ensuring your identity is always protected.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+</body>
+</html> 

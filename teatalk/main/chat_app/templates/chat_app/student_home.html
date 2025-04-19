@@ -1,0 +1,512 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            color: var(--primary-blue);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-role {
+            background-color: rgba(0, 112, 243, 0.1);
+            color: var(--primary-blue);
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .consultation-section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .chat-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .chat-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-item:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .chat-details h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .chat-time {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .issue-description {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+            max-width: 400px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+        
+        .btn-accept {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .btn-accept:hover {
+            background-color: #389e0d;
+        }
+        
+        .btn-reject {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background-color: #cf1322;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: #52c41a;
+        }
+        
+        .status-badge.pending {
+            background-color: rgba(250, 173, 20, 0.1);
+            color: #faad14;
+        }
+        
+        .status-badge.completed {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+        }
+        
+        .empty-state {
+            padding: 30px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 112, 243, 0.4);
+        }
+        
+        .action-btn-container {
+            padding: 20px;
+        }
+        
+        .quick-actions {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .action-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .action-link:last-child {
+            border-bottom: none;
+        }
+        
+        .action-link:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .action-icon.history {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: #52c41a;
+        }
+        
+        .action-icon.settings {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+        }
+        
+        .action-icon.help {
+            background-color: rgba(138, 43, 226, 0.1);
+            color: #8a2be2;
+        }
+        
+        .anonymity-banner {
+            background-color: rgba(24, 144, 255, 0.1);
+            border-left: 4px solid #1890ff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .anonymity-banner i {
+            color: #1890ff;
+            margin-right: 12px;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+        
+        .anonymity-banner h3 {
+            font-size: 14px;
+            color: #1890ff;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .anonymity-banner p {
+            font-size: 13px;
+            color: #5a9bce;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <!-- Header with Logo and User Info -->
+            <div class="header">
+                <div class="logo">TeaTalk</div>
+                <div class="user-info">
+                    <div class="user-role">
+                        <i class="fas fa-user-shield"></i>
+                        <span>{{ user.profile.role|default:"Student" }}</span>
+                    </div>
+                    <a href="{% url 'profile' %}" class="profile-btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile</span>
+                    </a>
+                    <button id="logoutBtn" class="logout-btn">
+                        <span>Logout</span>
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Anonymity Banner -->
+            <div class="anonymity-banner">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <h3>Anonymous Consultations</h3>
+                    <p>Your Safe Space: Everything you share stays completely anonymous, so you can speak freely.</p>
+                </div>
+            </div>
+            
+            {% if pending_requests %}
+            <div class="consultation-section mt-8">
+                <div class="section-header text-lg font-semibold mb-4">Sent Requests</div>
+                <div class="chat-list space-y-3">
+                    {% for request in pending_requests %}
+                    <div class="chat-item bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-start">
+                            <div class="chat-details">
+                                <h3 class="font-medium">Request to {{ request.psych_student.anonymous_id }}</h3>
+                                <div class="chat-time text-sm text-gray-500">
+                                    Sent: {{ request.created_at|timesince }} ago
+                                </div>
+                                <div class="issue-description mt-2 text-sm">
+                                    <small><strong>Issue:</strong> {{ request.issue_description|truncatechars:100 }}</small>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                                    {{ request.status|title }}
+                                </span>
+                                {% if request.status == 'pending' %}
+                                <div class="action-buttons flex space-x-2">
+                                    <a href="{% url 'accept_request' %}?request_id={{ request.id }}" class="btn btn-sm bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                                        <i class="fas fa-trash"></i> Delete your request
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state text-gray-500">
+                        No sent consultation requests.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Active Consultations List -->
+            <div class="consultation-section">
+                <div class="section-header">My Active Consultations</div>
+                <div class="chat-list">
+                    {% for conversation in active_conversations %}
+                    <div class="chat-item" id="chatItem{{ conversation.id }}">
+                        <div class="chat-details">
+                            <h3>Anonymous Consultation #{{ conversation.id }}</h3>
+                            <div class="chat-time">
+                                {% if conversation.get_last_message %}
+                                    Last message: {{ conversation.last_message_time|timesince }} ago
+                                {% else %}
+                                    No messages yet
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="{% url 'chat_with_id' conversation_id=conversation.id %}" class="btn btn-sm btn-accept">
+                                <i class="fas fa-comment"></i> Continue
+                            </a>
+                            <a href="{% url 'delete_chat' conversation_id=conversation.id %}" class="btn btn-sm btn-reject delete-chat-btn" data-id="{{ conversation.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        No active consultations at the moment.
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="action-btn-container">
+                    <button id="newChatBtn" class="new-chat-btn">
+                        <i class="fas fa-comment"></i>
+                        <span>Start New Consultation</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Ended Consultations -->
+            <div class="consultation-section">
+                <div class="section-header">Completed Consultations</div>
+                <div class="chat-list">
+                    {% for conversation in ended_conversations %}
+                    <div class="chat-item" id="chatItem{{ conversation.id }}">
+                        <div class="chat-details">
+                            <h3>Anonymous Consultation #{{ conversation.id }}</h3>
+                            <div class="chat-time">
+                                Ended: {{ conversation.last_message_time|date:"F j, Y" }}
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="{% url 'chat_with_id' conversation_id=conversation.id %}" class="btn btn-sm btn-accept">
+                                <i class="fas fa-history"></i> View
+                            </a>
+                            <a href="{% url 'delete_chat' conversation_id=conversation.id %}" class="btn btn-sm btn-reject delete-chat-btn" data-id="{{ conversation.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        No completed consultations yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="section-header">Quick Actions</div>
+                
+                <a href="#" class="action-link">
+                    <div class="action-icon history">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <span>Show Chat History</span>
+                </a>
+                
+                <a href="#" class="action-link">
+                    <div class="action-icon settings">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <span>Share Feedback</span>
+                </a>
+                
+                <a href="#" class="action-link">
+                    <div class="action-icon help">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <span>Help & Support</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    <script>
+        // Chat item click handlers
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add event listeners to active conversations
+            const chatItems = document.querySelectorAll('.chat-item');
+            chatItems.forEach(function(item) {
+                if (item.id && item.id.startsWith('chatItem')) {
+                    item.addEventListener('click', function() {
+                        const conversationId = item.id.replace('chatItem', '');
+                        window.location.href = "/chat/" + conversationId + "/";
+                    });
+                }
+            });
+
+            // New chat button functionality
+            var newChatBtn = document.getElementById('newChatBtn');
+            if (newChatBtn) {
+                newChatBtn.addEventListener('click', function() {
+                    window.location.href = "{% url 'find_psych_student' %}";
+                });
+            }
+            
+            // Logout button functionality
+            var logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    window.location.href = "{% url 'logout' %}";
+                });
+            }
+
+            // Delete chat button functionality
+            const deleteChatBtns = document.querySelectorAll('.delete-chat-btn');
+            deleteChatBtns.forEach(btn => {
+                btn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const conversationId = this.getAttribute('data-id');
+                    
+                    if (confirm('Bu sohbet oturumunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve tüm mesajlar kalıcı olarak silinecektir.')) {
+                        window.location.href = "{% url 'delete_chat' conversation_id=0 %}".replace('0', conversationId);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
