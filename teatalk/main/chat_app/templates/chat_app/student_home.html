@@ -311,10 +311,13 @@
                         <i class="fas fa-user-circle"></i>
                         <span>Profile</span>
                     </a>
-                    <button id="logoutBtn" class="logout-btn">
-                        <span>Logout</span>
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            <span>Logout</span>
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
             
@@ -486,12 +489,12 @@
             }
             
             // Logout button functionality
-            var logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function() {
-                    window.location.href = "{% url 'logout' %}";
-                });
-            }
+           // var logoutBtn = document.getElementById('logoutBtn');
+            //if (logoutBtn) {
+              //  logoutBtn.addEventListener('click', function() {
+                //    window.location.href = "{% url 'logout' %}";
+                //});
+            //}
 
             // Delete chat button functionality
             const deleteChatBtns = document.querySelectorAll('.delete-chat-btn');

@@ -264,7 +264,7 @@
         <div class="form-container">
             <!-- Header with Logo and Back Button -->
             <div class="header">
-                <div class="logo">PsychChat</div>
+                <div class="logo">TeaTalk</div>
                 <a href="{% url 'home' %}" class="back-link">
                     <i class="fas fa-arrow-left"></i>
                     <span>Back to Dashboard</span>
@@ -283,17 +283,7 @@
                 
                 <div class="profile-content">
                     <!-- Avatar and Username -->
-                    <div class="avatar-section">
-                        <div class="avatar">
-                            {% if user.profile.avatar %}
-                                <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
-                            {% else %}
-                                <i class="fas fa-user"></i>
-                            {% endif %}
-                        </div>
-                        <div class="user-name">{{ user.username }}</div>
-                    </div>
-                    
+
                     <!-- Availability Toggle (Only for Psychology Students) -->
                     {% if user.profile.is_psych_student %}
                     <div class="status-toggle">
@@ -357,11 +347,7 @@
                     <form id="profileForm" class="profile-form" method="post" action="{% url 'update_profile' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         
-                        <div class="form-group">
-                            <label for="avatar">Profile Picture</label>
-                            <input type="file" name="avatar" id="avatar" class="form-control">
-                        </div>
-                        
+
                         {% if user.profile.is_psych_student %}
                         <!-- Psychology Student Fields -->
                         <div class="form-group">

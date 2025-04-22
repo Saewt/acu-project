@@ -258,12 +258,26 @@
                         log('Message sent successfully:', data);
                         // Find the optimistic message using tempId and update it
                         const confirmedMsg = document.getElementById(tempId);
-                        if (confirmedMsg) {
-                            confirmedMsg.classList.remove('pending-message');
-                            confirmedMsg.removeAttribute('id'); // Remove temporary ID
-                            confirmedMsg.setAttribute('data-message-id', data.message_id);
-                        }
-                        
+                        .then(data => {
+                            if (data.error) {
+                            } else {
+                                 log('Message sent successfully:', data);
+                                 const confirmedMsg = document.getElementById(tempId);
+                                 if (confirmedMsg) {
+                                     confirmedMsg.classList.remove('pending-message');
+                                     confirmedMsg.setAttribute('data-message-id', data.message_id);
+                                     confirmedMsg.removeAttribute('id');
+                                 }
+                            }
+                        });
+
+
+
+
+
+
+
+
                         // Update the last message ID we've seen
                         if (data.message_id && data.message_id > lastMsgId) {
                             lastMsgId = data.message_id;
