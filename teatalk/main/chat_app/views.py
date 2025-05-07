@@ -710,3 +710,32 @@ def delete_chat(request, conversation_id):
     except Exception as e:
         print(f"Error deleting chat: {str(e)}")
         return redirect('home')
+
+@login_required
+def update_availability(request):
+    if request.method == 'POST':
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+            
+            if user_profile.is_psych_student:
+                try:
+                    psych_profile = PsychologyStudentProfile.objects.get(user_profile=user_profile)
+                    
+                
+                    is_available = request.POST.get('is_available') == 'on'
+                    psych_profile.is_available = is_available
+                    psych_profile.save()
+                    
+                    messages.success(request, 'Your availability status has been updated to ' + ('Available' if is_available else 'Not Available') + '.')
+                    
+                except PsychologyStudentProfile.DoesNotExist:
+                    messages.error(request, 'Psychology student profile not found.')
+            else:
+                messages.error(request, 'Only psychology students can update availability.')
+            
+            return redirect('psychology_student_home')
+        except UserProfile.DoesNotExist:
+            messages.error(request, 'User profile not found.')
+            return redirect('home')
+    
+    return redirect('psychology_student_home')

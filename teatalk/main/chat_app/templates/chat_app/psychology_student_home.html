@@ -294,6 +294,109 @@
             background-color: rgba(24, 144, 255, 0.1);
             color: #1890ff;
         }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            animation: fadeInOut 3s forwards;
+        }
+        
+        .message.success {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: #52c41a;
+            border-left: 4px solid #52c41a;
+        }
+        
+        .message.error {
+            background-color: rgba(245, 34, 45, 0.1);
+            color: #f5222d;
+            border-left: 4px solid #f5222d;
+        }
+        
+        .message.info {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+            border-left: 4px solid #1890ff;
+        }
+        
+        .message.warning {
+            background-color: rgba(250, 173, 20, 0.1);
+            color: #faad14;
+            border-left: 4px solid #faad14;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); visibility: hidden; }
+        }
+        
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #52c41a;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .status-text {
+            font-weight: 500;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -313,6 +416,14 @@
                         <i class="fas fa-user-md"></i>
                         <span>Psychology Student</span>
                     </div>
+                    <form class="status-toggle" method="post" action="{% url 'update_availability' %}">
+                        {% csrf_token %}
+                        <label class="switch">
+                            <input type="checkbox" name="is_available" id="availabilityToggle" {% if user_profile.psych_student_profile.is_available %}checked{% endif %} onchange="this.form.submit()">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="status-text">{% if user_profile.psych_student_profile.is_available %}Available for Consultations{% else %}Not Available for Consultations{% endif %}</span>
+                    </form>
                     <a href="{% url 'profile' %}" class="profile-btn">
                         <i class="fas fa-user-circle"></i>
                         <span>Profile</span>
@@ -326,6 +437,17 @@
                     </form>
                 </div>
             </div>
+            
+            <!-- Messages from Django -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
             
             <!-- Stats Dashboard -->
             <div class="dashboard-stats">

@@ -30,6 +30,7 @@ urlpatterns = [
     path('register/', chat_views.register, name='register'),
     path('profile/', login_required(chat_views.profile), name='profile'),
     path('update-profile/', login_required(chat_views.update_profile), name='update_profile'),
+    path('update-availability/', login_required(chat_views.update_availability), name='update_availability'),
     
     # Kimlik doğrulama
     path('login/', chat_views.login_view, name='login_view'),

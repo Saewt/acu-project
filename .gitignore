@@ -82,4 +82,7 @@ npm-debug.log
 # Specific project files
 teatalk/main/db.sqlite3
 .DS_Store
-teatalk/env/ 
+teatalk/env/
+
+# Migrations
+*/migrations/__pycache__/ 
