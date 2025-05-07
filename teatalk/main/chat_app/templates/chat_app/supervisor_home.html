@@ -1,0 +1,540 @@
+<!-- supervisor_home.html not ready yet-->
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - Supervisor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 1000px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            color: var(--primary-blue);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-role {
+            background-color: rgba(184, 134, 11, 0.1);
+            color: #b8860b;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+        
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .card-header-desc {
+            font-size: 12px;
+            color: #888;
+            font-weight: normal;
+            margin-top: 3px;
+        }
+        
+        .card-header.flagged {
+            background-color: rgba(255, 77, 79, 0.1);
+            color: #ff4d4f;
+        }
+        
+        .card-header-desc.flagged {
+            color: rgba(255, 77, 79, 0.8);
+        }
+        
+        .student-list, .case-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .student-item, .case-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .student-item:hover, .case-item:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .student-info h3, .case-info h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .student-details, .case-details {
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            align-items: center;
+        }
+        
+        .flag-indicator {
+            color: #ff4d4f;
+            margin-left: 8px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            border: none;
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-danger {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .empty-state {
+            padding: 30px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .stats-grid {
+            padding: 20px;
+            display: grid;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stat-value.alert {
+            color: #ff4d4f;
+        }
+        
+        .action-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .action-link:last-child {
+            border-bottom: none;
+        }
+        
+        .action-link:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .action-icon.review {
+            background-color: rgba(103, 58, 183, 0.1);
+            color: #673ab7;
+        }
+        
+        .action-icon.schedule {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: #52c41a;
+        }
+        
+        .action-icon.reports {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+        }
+        
+        .action-icon.assign {
+            background-color: rgba(154, 79, 245, 0.1);
+            color: #9a4ff5;
+        }
+        
+        .action-icon.settings {
+            background-color: rgba(128, 128, 128, 0.1);
+            color: #808080;
+        }
+        
+        .supervisor-banner {
+            background-color: rgba(184, 134, 11, 0.1);
+            border-left: 4px solid #b8860b;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .supervisor-banner i {
+            color: #b8860b;
+            margin-right: 12px;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+        
+        .supervisor-banner h3 {
+            font-size: 14px;
+            color: #b8860b;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .supervisor-banner p {
+            font-size: 13px;
+            color: rgba(184, 134, 11, 0.8);
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <!-- Header with Logo and User Info -->
+            <div class="header">
+                <div class="logo">TeaTalk</div>
+                <div class="user-info">
+                    <div class="user-role">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Supervisor</span>
+                    </div>
+                    <form class="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            <span>Logout</span>
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Supervisor Banner -->
+            <div class="supervisor-banner">
+                <i class="fas fa-user-shield"></i>
+                <div>
+                    <h3>Supervisor Access</h3>
+                    <p>As a supervisor, you have access to review your assigned psychology students' consultations while maintaining anonymity protocols.</p>
+                </div>
+            </div>
+            
+            <div class="main-grid">
+                <div class="left-column">
+                    <!-- Supervised Students Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            My Psychology Students
+                            <div class="card-header-desc">Students you are supervising </div>
+                        </div>
+                        <div class="student-list">
+                            {% for student in supervised_students %}
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <h3>{{ student.name }}</h3>
+                                    <div class="student-details">
+                                        Active cases: {{ student.active_cases_count }}
+                                        {% if student.has_flagged_cases %}
+                                        <div class="flag-indicator">
+                                            <i class="fas fa-flag"></i>
+                                            <span>Needs attention</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary view-cases-btn" data-id="{{ student.id }}">
+                                        <i class="fas fa-eye"></i>
+                                        View Cases
+                                    </button>
+                                    <button class="btn btn-secondary contact-btn" data-id="{{ student.id }}">
+                                        <i class="fas fa-comment"></i>
+                                        Contact
+                                    </button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">
+                                No psychology students assigned to you yet.
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Flagged Cases Card -->
+                    <div class="card">
+                        <div class="card-header flagged">
+                            Flagged Cases
+                            <div class="card-header-desc flagged">Cases that require your immediate attention</div>
+                        </div>
+                        <div class="case-list">
+                            {% for case in flagged_cases %}
+                            <div class="case-item">
+                                <div class="case-info">
+                                    <h3>Case #{{ case.id }}</h3>
+                                    <div class="case-details">
+                                        Handled by: {{ case.psychology_student.name }}
+                                        <div class="flag-indicator">
+                                            <i class="fas fa-flag"></i>
+                                            <span>{{ case.flag_reason }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger review-case-btn" data-id="{{ case.id }}">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Check
+                                </button>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">
+                                No flagged cases at the moment.
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <!-- Stats Card -->
+                    <div class="card">
+                        <div class="card-header">Supervision Stats</div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Supervised Students</div>
+                                <div class="stat-value">{{ supervised_students_count|default:"0" }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Active Cases</div>
+                                <div class="stat-value">{{ total_active_cases|default:"0" }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Flagged Cases</div>
+                                <div class="stat-value {% if flagged_cases_count > 0 %}alert{% endif %}">
+                                    {{ flagged_cases_count|default:"0" }}
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Case Reviews This Week</div>
+                                <div class="stat-value">{{ weekly_reviews_count|default:"0" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Supervision Tools Card -->
+                    <div class="card">
+                        <div class="card-header">Supervision Tools</div>
+                        
+                        <a href="#" class="action-link">
+                            <div class="action-icon review">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <span>Case Review Forms</span>
+                        </a>
+                        
+                        <a href="#" class="action-link">
+                            <div class="action-icon schedule">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <span>Group Supervision</span>
+                        </a>
+                        
+                        <a href="#" class="action-link">
+                            <div class="action-icon reports">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <span>Performance Reports</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Administration Card -->
+                    <div class="card">
+                        <div class="card-header">Administration</div>
+                        
+                        <a href="#" class="action-link">
+                            <div class="action-icon assign">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <span>Assign New Students</span>
+                        </a>
+                        
+                        <a href="#" class="action-link">
+                            <div class="action-icon settings">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // View cases button handlers
+            var viewCasesButtons = document.querySelectorAll('.view-cases-btn');
+            if (viewCasesButtons.length > 0) {
+                viewCasesButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var studentId = this.getAttribute('data-id');
+                        // Replace with actual URL once defined
+                        window.location.href = "/supervisor/student-cases/?student_id=" + studentId;
+                    });
+                });
+            }
+            
+            // Review case button handlers
+            var reviewCaseButtons = document.querySelectorAll('.review-case-btn');
+            if (reviewCaseButtons.length > 0) {
+                reviewCaseButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var caseId = this.getAttribute('data-id');
+                        // Replace with actual URL once defined
+                        window.location.href = "/supervisor/review-case/?case_id=" + caseId;
+                    });
+                });
+            }
+            
+            // Contact button handlers
+            var contactButtons = document.querySelectorAll('.contact-btn');
+            if (contactButtons.length > 0) {
+                contactButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var studentId = this.getAttribute('data-id');
+                        // Replace with actual URL once defined
+                        window.location.href = "/supervisor/contact-student/?student_id=" + studentId;
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

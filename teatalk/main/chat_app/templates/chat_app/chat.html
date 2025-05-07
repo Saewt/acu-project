@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <style>
+        .message-sent {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            max-width: 80%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 1rem;
+        }
+        
+        .message-received {
+            background-color: #d1d5db;
+            color: #1f2937;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            max-width: 80%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 1rem;
+        }
+        
+        .message-text {
+            line-height: 1.5;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-inter flex flex-col">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="text-gray-500 hover:text-gray-700 mr-4">
+                        <i class="fas fa-arrow-left"></i>
+                        <span class="ml-2">Back to Dashboard</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium flex items-center">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        <span>Anonymous Consultation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Chat Container -->
+    <div class="flex-1 flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Chat Header -->
+        <div class="bg-white shadow-sm rounded-t-lg p-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-blue-600">
+                        Chat ID: {{ chat_session.id }}
+                    </h2>
+                    <p class="text-sm text-gray-500">Partner ID: {% if user.profile == chat_session.normal_user %}
+                        {{ chat_session.psych_student.anonymous_id }}
+                        {% else %}
+                        {{ chat_session.normal_user.anonymous_id }}
+                        {% endif %}</p>
+                    <p class="text-sm text-gray-500">Started: {{ chat_session.created_at|date:"j M Y" }}</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chatMessages" class="flex-1 bg-white overflow-y-auto p-4" style="min-height: 400px; max-height: calc(100vh - 240px);">
+            <!-- Anonymity Notice -->
+            <div class="flex justify-center mb-6">
+                <div class="bg-blue-50 text-blue-800 text-xs rounded-md px-3 py-2 max-w-md text-center">
+                    <i class="fas fa-lock mr-1"></i>
+                    This conversation is anonymous. Only randomized IDs are visible to both users.
+                </div>
+            </div>
+
+            <!-- System Message -->
+            <div class="flex justify-center mb-6">
+                <div class="bg-gray-100 text-gray-600 text-sm rounded-md px-4 py-2 max-w-md">
+                    Consultation started. You are now connected anonymously.
+                </div>
+            </div>
+
+            <!-- Messages from database -->
+            {% for message in messages %}
+                {% if message.sender == user_profile %}
+                    <!-- Sent Message -->
+                    <div class="flex justify-end mb-6" data-message-id="{{ message.id }}">
+                        <div class="message-sent">
+                            <p class="message-text">{{ message.content }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Received Message -->
+                    <div class="flex mb-6" data-message-id="{{ message.id }}">
+                        <div class="message-received">
+                            <p class="message-text">{{ message.content }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <!-- No messages yet -->
+                <div class="flex justify-center mb-6">
+                    <div class="bg-gray-100 text-gray-600 text-sm rounded-md px-4 py-2 max-w-md">
+                        No messages yet. Start the conversation!
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Chat Input -->
+        <div class="bg-white shadow-sm rounded-b-lg p-4 border-t border-gray-200">
+            <form id="messageForm" class="flex items-end">
+                {% csrf_token %}
+                <input type="hidden" id="conversationId" value="{{ conversation_id }}">
+                <div class="flex-1 mr-4">
+                    <textarea id="messageInput" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="Type your message..." rows="1"></textarea>
+                </div>
+                <button type="submit"
+                        class="bg-blue-600 text-white rounded-lg p-3 flex-shrink-0
+                               hover:bg-blue-700 transition duration-150 ease-in-out
+                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                               active:bg-blue-800">
+                    <i class="fas fa-paper-plane"></i>
+                    <span class="sr-only">Send message</span>
+                </button>
+            </form>
+            <div class="mt-2 text-xs text-gray-500 flex items-center">
+                <i class="fas fa-shield-alt mr-1 text-blue-600"></i>
+                <span>Your identity remains anonymous during </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    <script>
+        const currentUserProfileId = "{{ user_profile.id }}";
+        let lastMsgId = 0;
+        
+        const DEBUG = true;
+        function log(message, data) {
+            if (DEBUG) {
+                console.log(`[TeaTalk Debug] ${message}`, data || '');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const conversationId = document.getElementById('conversationId').value;
+            log('Conversation ID from form:', conversationId);
+            
+            if (!conversationId) {
+                console.error('Missing conversation ID in chat view');
+                const pathParts = window.location.pathname.split('/');
+                const possibleId = pathParts[pathParts.length - 1];
+                if (possibleId && !isNaN(possibleId)) {
+                    document.getElementById('conversationId').value = possibleId;
+                    log('Recovered conversation ID from URL:', possibleId);
+                } else {
+                    alert('Error: Could not determine conversation ID. Redirecting to home...');
+                    window.location.href = "{% url 'home' %}";
+                }
+            }
+            
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            const messageElements = document.querySelectorAll('.message-sent, .message-received');
+            if (messageElements.length > 0) {
+                log('Found existing messages:', messageElements.length);
+            }
+            
+            fetchNewMessages();
+        });
+        
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            const conversationId = document.getElementById('conversationId').value;
+            
+            if (!conversationId) {
+                alert('Error: Missing conversation ID');
+                return;
+            }
+            
+            if (message) {
+                const tempId = `temp_${Date.now()}`;
+                
+                const chatMessages = document.getElementById('chatMessages');
+                const messageElement = document.createElement('div');
+                messageElement.className = 'flex justify-end mb-6 pending-message';
+                messageElement.id = tempId;
+                messageElement.innerHTML = `
+                    <div class="message-sent">
+                        <p class="message-text">${message}</p>
+                    </div>
+                `;
+                chatMessages.appendChild(messageElement);
+                
+                messageInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                fetch('{% url "send_message" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        conversation_id: conversationId,
+                        content: message
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        const pendingMsg = document.getElementById(tempId);
+                        if (pendingMsg) pendingMsg.remove();
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error sending message:', data.error);
+                        alert('Error sending message: ' + data.error);
+                        const pendingMsg = document.getElementById(tempId);
+                        if (pendingMsg) pendingMsg.remove();
+                    } else {
+                        log('Message sent successfully:', data);
+                        const confirmedMsg = document.getElementById(tempId);
+                        if (confirmedMsg) {
+                            confirmedMsg.classList.remove('pending-message');
+                            confirmedMsg.removeAttribute('id');
+                            confirmedMsg.setAttribute('data-message-id', data.message_id);
+                        }
+                        
+                        if (data.message_id && data.message_id > lastMsgId) {
+                            lastMsgId = data.message_id;
+                        }
+                        
+                        localStorage.removeItem(`lastMessageTime_${conversationId}`);
+                        setTimeout(fetchNewMessages, 300);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                    alert('Failed to send message. Please try again later.');
+                    const pendingMsg = document.getElementById(tempId);
+                    if (pendingMsg) pendingMsg.remove();
+                });
+            }
+        });
+        
+        function fetchNewMessages() {
+            const conversationId = document.getElementById('conversationId').value;
+            const chatMessages = document.getElementById('chatMessages');
+            
+            if (!conversationId) {
+                console.error('No conversation ID found');
+                return;
+            }
+            
+            let lastMessageTime = localStorage.getItem(`lastMessageTime_${conversationId}`);
+            if (!lastMessageTime || lastMessageTime === 'undefined' || lastMessageTime === 'null') {
+                lastMessageTime = '0';
+            }
+            
+            log('Fetching messages since:', lastMessageTime);
+            
+            fetch(`{% url "get_messages" %}?conversation_id=${conversationId}&since=${encodeURIComponent(lastMessageTime)}`)
+            .then(response => {
+                if (!response.ok) {
+                    log('Error response from server:', response.status);
+                    if (response.status === 400 && lastMessageTime !== '0') {
+                        log('Resetting timestamp due to error');
+                        localStorage.removeItem(`lastMessageTime_${conversationId}`);
+                        setTimeout(fetchNewMessages, 500);
+                    }
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching messages:', data.error);
+                    return;
+                }
+                
+                log('Received message data:', data);
+                
+                if (data.messages && data.messages.length > 0) {
+                    log('New messages count:', data.messages.length);
+                    let addedNewMessage = false;
+                    
+                    data.messages.sort((a, b) => a.id - b.id);
+                    
+                    data.messages.forEach(message => {
+                        const existingMsg = document.querySelector(`[data-message-id="${message.id}"]`);
+                        if (!existingMsg) {
+                            addedNewMessage = true;
+                            const messageElement = document.createElement('div');
+                            const isSent = message.is_current_user;
+                            messageElement.className = isSent ? 'flex justify-end mb-6' : 'flex mb-6';
+                            messageElement.setAttribute('data-message-id', message.id);
+                            messageElement.innerHTML = `
+                                <div class="${isSent ? 'message-sent' : 'message-received'}">
+                                    <p class="message-text">${message.content}</p>
+                                </div>
+                            `;
+                            chatMessages.appendChild(messageElement);
+                            
+                            if (message.id > lastMsgId) {
+                                lastMsgId = message.id;
+                            }
+                        }
+                    });
+                    
+                    if (addedNewMessage) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }
+                
+                if (data.last_time) {
+                    log('Updating last message time to:', data.last_time);
+                    localStorage.setItem(`lastMessageTime_${conversationId}`, data.last_time);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching messages:', error);
+            });
+        }
+        
+        let messagePollingInterval = setInterval(fetchNewMessages, 3000);
+        
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                clearInterval(messagePollingInterval);
+                log('Polling paused - page hidden');
+            } else {
+                messagePollingInterval = setInterval(fetchNewMessages, 3000);
+                log('Polling resumed - page visible');
+                fetchNewMessages();
+            }
+        });
+        
+        const messageInput = document.getElementById('messageInput');
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+</body>
+</html>

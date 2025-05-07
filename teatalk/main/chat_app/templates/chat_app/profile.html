@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - My Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            color: var(--primary-blue);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .profile-section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .profile-content {
+            padding: 20px;
+        }
+        
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .profile-field {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .field-label {
+            font-weight: 600;
+            color: #333;
+            flex-basis: 150px;
+        }
+        
+        .field-value {
+            color: #666;
+            flex: 1;
+        }
+        
+        .profile-form {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 112, 243, 0.4);
+        }
+        
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #666;
+            overflow: hidden;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #52c41a;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .status-text {
+            font-weight: 500;
+        }
+        
+        .expertise-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .expertise-tag {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <div class="logo">TeaTalk</div>
+                <a href="{% url 'home' %}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="profile-section">
+                <div class="section-header">
+                    <span>My Profile</span>
+                    <button id="editProfileBtn" class="edit-btn">
+                        <i class="fas fa-pencil-alt"></i>
+                        <span>Edit Profile</span>
+                    </button>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="avatar-section">
+                        <div class="user-name">{{ user.username|upper }}</div>
+                    </div>
+                    
+                    {% if user.profile.is_psych_student %}
+                    <div class="status-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="availabilityToggle" {% if psych_profile.is_available %}checked{% endif %} disabled>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="status-text">{% if psych_profile.is_available %}Available for Consultations{% else %}Not Available for Consultations{% endif %}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div id="profileDetails" class="profile-details">
+                        <div class="profile-field">
+                            <div class="field-label">Role:</div>
+                            <div class="field-value">{{ user.profile.role }}</div>
+                        </div>
+                        
+                        {% if user.profile.is_psych_student %}
+                        <div class="profile-field">
+                            <div class="field-label">School Year:</div>
+                            <div class="field-value">{{ psych_profile.school_year }}</div>
+                        </div>
+                        <div class="profile-field">
+                            <div class="field-label">Expertise Areas:</div>
+                            <div class="field-value">
+                                <div class="expertise-tags">
+                                    {% for area in psych_profile.expertise_areas.all %}
+                                    <span class="expertise-tag">{{ area.name }}</span>
+                                    {% empty %}
+                                    No expertise areas specified
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-field">
+                            <div class="field-label">Bio:</div>
+                            <div class="field-value">{{ psych_profile.bio|default:"No bio provided" }}</div>
+                        </div>
+                        {% else %}
+                        <div class="profile-field">
+                            <div class="field-label">Area of Study:</div>
+                            <div class="field-value">{{ user.profile.area_of_study|default:"Not specified" }}</div>
+                        </div>
+                        <div class="profile-field">
+                            <div class="field-label">Semester:</div>
+                            <div class="field-value">{{ user.profile.semester|default:"Not specified" }}</div>
+                        </div>
+                        <div class="profile-field">
+                            <div class="field-label">Academic Interests:</div>
+                            <div class="field-value">{{ user.profile.academic_interests|default:"Not specified" }}</div>
+                        </div>
+                        <div class="profile-field">
+                            <div class="field-label">About Me:</div>
+                            <div class="field-value">{{ user.profile.about_me|default:"No information provided" }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <form id="profileForm" class="profile-form" method="post" action="{% url 'update_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if user.profile.is_psych_student %}
+                        <div class="form-group">
+                            <label for="is_available">Availability</label>
+                            <div>
+                                <label class="switch">
+                                    <input type="checkbox" name="is_available" id="is_available" {% if psych_profile.is_available %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>Available for consultations</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="school_year">School Year</label>
+                            <select name="school_year" id="school_year" class="form-control">
+                                <option value="1" {% if psych_profile.school_year == 1 %}selected{% endif %}>First Year</option>
+                                <option value="2" {% if psych_profile.school_year == 2 %}selected{% endif %}>Second Year</option>
+                                <option value="3" {% if psych_profile.school_year == 3 %}selected{% endif %}>Third Year</option>
+                                <option value="4" {% if psych_profile.school_year == 4 %}selected{% endif %}>Fourth Year</option>
+                                <option value="5" {% if psych_profile.school_year == 5 %}selected{% endif %}>Graduate</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="expertise_areas">Expertise Areas</label>
+                            <select name="expertise_areas" id="expertise_areas" class="form-control" multiple>
+                                {% for area in all_expertise_areas %}
+                                <option value="{{ area.id }}" {% if area in psych_profile.expertise_areas.all %}selected{% endif %}>{{ area.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea name="bio" id="bio" class="form-control">{{ psych_profile.bio|default:'' }}</textarea>
+                        </div>
+                        {% else %}
+                        <div class="form-group">
+                            <label for="area_of_study">Area of Study</label>
+                            <input type="text" name="area_of_study" id="area_of_study" class="form-control" value="{{ user.profile.area_of_study|default:'' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="semester">Semester</label>
+                            <input type="text" name="semester" id="semester" class="form-control" value="{{ user.profile.semester|default:'' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="academic_interests">Academic Interests</label>
+                            <input type="text" name="academic_interests" id="academic_interests" class="form-control" value="{{ user.profile.academic_interests|default:'' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="about_me">About Me</label>
+                            <textarea name="about_me" id="about_me" class="form-control">{{ user.profile.about_me|default:'' }}</textarea>
+                        </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var editProfileBtn = document.getElementById('editProfileBtn');
+            var profileDetails = document.getElementById('profileDetails');
+            var profileForm = document.getElementById('profileForm');
+            
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function() {
+                    if (profileDetails.style.display !== 'none') {
+                        profileDetails.style.display = 'none';
+                        profileForm.style.display = 'block';
+                        editProfileBtn.innerHTML = '<i class="fas fa-eye"></i><span>View Profile</span>';
+                    } else {
+                        profileDetails.style.display = 'flex';
+                        profileForm.style.display = 'none';
+                        editProfileBtn.innerHTML = '<i class="fas fa-pencil-alt"></i><span>Edit Profile</span>';
+                    }
+                });
+            }
+            
+            $(document).ready(function() {
+                $('#expertise_areas').select2({
+                    placeholder: "Select expertise areas",
+                    allowClear: true
+                });
+            });
+            
+            {% if messages %}
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
+</body>
+</html> 

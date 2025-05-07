@@ -1,0 +1,546 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - Psychology Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 1000px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            color: var(--primary-blue);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-role {
+            background-color: rgba(0, 112, 243, 0.1);
+            color: var(--primary-blue);
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+        
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .profile-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-blue);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+        }
+        
+        .section-title i {
+            color: var(--primary-blue);
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 25px;
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 5px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #555;
+            position: relative;
+        }
+        
+        .tab-button.active {
+            background: white;
+            color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-button .badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #f56565;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .request-card, .chat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .request-header, .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .request-title, .chat-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .request-date, .chat-date {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .request-description {
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #555;
+            border-left: 3px solid #cbd5e1;
+        }
+        
+        .request-actions, .chat-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #cbd5e1;
+        }
+        
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #64748b;
+        }
+        
+        .empty-state-desc {
+            font-size: 14px;
+        }
+        
+        .issue-description {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .badge-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-active {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: #52c41a;
+        }
+        
+        .badge-ended {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="form-container">
+            <!-- Header with Logo and User Info -->
+            <div class="header">
+                <div class="logo">TeaTalk</div>
+                <div class="user-info">
+                    <div class="user-role">
+                        <i class="fas fa-user-md"></i>
+                        <span>Psychology Student</span>
+                    </div>
+                    <a href="{% url 'profile' %}" class="profile-btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile</span>
+                    </a>
+                    <form class="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            <span>Logout</span>
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Stats Dashboard -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-value">{{ waiting_requests.count }}</div>
+                    <div class="stat-label">Waiting Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ active_cases }}</div>
+                    <div class="stat-label">Active Chats</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ completed_cases }}</div>
+                    <div class="stat-label">Completed Sessions</div>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="waiting-requests">
+                    Waiting Requests
+                    {% if waiting_requests.count > 0 %}
+                    <span class="badge">{{ waiting_requests.count }}</span>
+                    {% endif %}
+                </button>
+                <button class="tab-button" data-tab="active-chats">Active Chats</button>
+                <button class="tab-button" data-tab="ended-sessions">Ended Sessions</button>
+            </div>
+            
+            <!-- Waiting Requests Tab -->
+            <div id="waiting-requests" class="tab-content active">
+                <div class="section-title">
+                    <i class="fas fa-clock"></i>
+                    <span>Waiting Requests</span>
+                </div>
+                
+                {% if waiting_requests %}
+                    {% for request in waiting_requests %}
+                    <div class="request-card">
+                        <div class="request-header">
+                            <div class="request-title">
+                                Anonymous Request #{{ request.id }}
+                            </div>
+                            <div class="request-date">
+                                Waiting since: {{ request.created_at|timesince }} ago
+                            </div>
+                        </div>
+                        <div class="request-description">
+                            <div class="issue-description">
+                                <strong>Issue:</strong> {{ request.issue_description }}
+                            </div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="btn btn-secondary reject-request-btn" data-id="{{ request.id }}">
+                                Decline
+                            </button>
+                            <button class="btn btn-primary accept-request-btn" data-id="{{ request.id }}">
+                                Accept
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <div class="empty-state-title">No Waiting Requests</div>
+                        <div class="empty-state-desc">No requests rigth now.</div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Active Chats Tab -->
+            <div id="active-chats" class="tab-content">
+                <div class="section-title">
+                    <i class="fas fa-comments"></i>
+                    <span>Your Active Conversations</span>
+                </div>
+                
+                {% if active_conversations %}
+                    {% for conversation in active_conversations %}
+                    <div class="chat-card" id="chatItem{{ conversation.id }}">
+                        <div class="chat-header">
+                            <div class="chat-title">
+                                Conversation with Anonymous #{{ conversation.normal_user.anonymous_id }}
+                                <span class="badge-status badge-active">Active</span>
+                            </div>
+                            <div class="chat-date">
+                                {% if conversation.last_message_time %}
+                                Last activity: {{ conversation.last_message_time|timesince }} ago
+                                {% else %}
+                                Started: {{ conversation.created_at|timesince }} ago
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="btn btn-primary view-chat-btn" data-id="{{ conversation.id }}">
+                                <i class="fas fa-comment"></i> Continue Chat
+                            </button>
+                            <button class="btn btn-secondary delete-chat-btn" data-id="{{ conversation.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <div class="empty-state-title">No Active Conversations</div>
+                        <div class="empty-state-desc">No active chats right now.</div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Ended Sessions Tab -->
+            <div id="ended-sessions" class="tab-content">
+                <div class="section-title">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Past chats</span>
+                </div>
+                
+                {% if ended_conversations %}
+                    {% for conversation in ended_conversations %}
+                    <div class="chat-card" id="chatItem{{ conversation.id }}">
+                        <div class="chat-header">
+                            <div class="chat-title">
+                                Conversation with Anonymous #{{ conversation.normal_user.anonymous_id }}
+                                <span class="badge-status badge-ended">Completed</span>
+                            </div>
+                            <div class="chat-date">
+                                Ended: {{ conversation.updated_at|timesince }} ago
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="btn btn-secondary view-chat-btn" data-id="{{ conversation.id }}">
+                                <i class="fas fa-history"></i> View History
+                            </button>
+                            <button class="btn btn-secondary delete-chat-btn" data-id="{{ conversation.id }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <div class="empty-state-title">No Completed Sessions</div>
+                        <div class="empty-state-desc">You haven't completed any consultation sessions yet.</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and tabs
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(tab => tab.classList.remove('active'));
+                    
+                    // Add active class to current button and tab
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Handle view chat buttons
+            const viewChatBtns = document.querySelectorAll('.view-chat-btn');
+            viewChatBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const conversationId = this.getAttribute('data-id');
+                    window.location.href = "{% url 'chat_with_id' conversation_id=0 %}".replace('0', conversationId);
+                });
+            });
+            
+            // Accept request button handlers
+            const acceptBtns = document.querySelectorAll('.accept-request-btn');
+            acceptBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const requestId = this.getAttribute('data-id');
+                    window.location.href = "{% url 'accept_request' %}?request_id=" + requestId;
+                });
+            });
+            
+            // Reject request button handlers (to be implemented)
+            const rejectBtns = document.querySelectorAll('.reject-request-btn');
+            rejectBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const requestId = this.getAttribute('data-id');
+                    window.location.href = "{% url 'reject_request' %}?request_id=" + requestId;
+                });
+            });
+            
+            // Delete chat button functionality
+            const deleteChatBtns = document.querySelectorAll('.delete-chat-btn');
+            deleteChatBtns.forEach(btn => {
+                btn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const conversationId = this.getAttribute('data-id');
+                    
+                    if (confirm('Bu sohbet oturumunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve tüm mesajlar kalıcı olarak silinecektir.')) {
+                        window.location.href = "{% url 'delete_chat' conversation_id=0 %}".replace('0', conversationId);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
