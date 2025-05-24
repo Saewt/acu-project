@@ -31,6 +31,8 @@ urlpatterns = [
     path('profile/', login_required(chat_views.profile), name='profile'),
     path('update-profile/', login_required(chat_views.update_profile), name='update_profile'),
     path('update-availability/', login_required(chat_views.update_availability), name='update_availability'),
+    path('notifications/mark-as-read/', login_required(chat_views.mark_notifications_read), name='mark_notifications_read'),
+    path('notifications/delete/<int:notification_id>/', login_required(chat_views.delete_notification), name='delete_notification'),
     
     # Kimlik doğrulama
     path('login/', chat_views.login_view, name='login_view'),
@@ -68,4 +70,5 @@ urlpatterns = [
     # API
     path('api/send-message/', chat_views.send_message, name='send_message'),
     path('api/get-messages/', chat_views.get_messages, name='get_messages'),
+
 ]

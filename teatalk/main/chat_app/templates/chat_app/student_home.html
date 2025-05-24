@@ -12,30 +12,30 @@
         .container {
             max-width: 800px;
         }
-        
+
         .form-container {
             padding: 30px;
         }
-        
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
         }
-        
+
         .logo {
             color: var(--primary-blue);
             font-size: 22px;
             font-weight: 700;
         }
-        
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .user-role {
             background-color: rgba(0, 112, 243, 0.1);
             color: var(--primary-blue);
@@ -43,13 +43,158 @@
             padding: 4px 12px;
             border-radius: 50px;
         }
-        
+
+        .notification-dropdown {
+            position: relative;
+        }
+
+        .notification-btn {
+            background: none;
+            color: var(--primary-blue);
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            position: relative;
+        }
+
+        .notification-count {
+            background-color: #ff4d4f;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        .notification-dropdown-content {
+            display: none;
+            transform: translateY(-10px);
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            max-height: 300px;
+            padding: 8px 0;
+            overflow-y: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .notification-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            gap: 8px;
+        }
+
+        .notification-icon {
+            position: static !important;
+            font-size: 14px;
+            margin-right: 6px;
+            color: var(--primary-blue);
+            flex-shrink: 0;
+            transform: none;
+            top: auto; left: auto;
+        }
+
+        .notification-item.message .notification-icon {
+            color: #1890ff;
+        }
+
+        .notification-item.request .notification-icon {
+            color: #3498db;
+        }
+
+        .notification-item.report .notification-icon {
+            color: #e74c3c;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content p {
+            margin: 0 0 4px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .notification-content small {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.2;
+        }
+
+        .notification-item.message {
+            background-color: rgba(24, 144, 255, 0.05);
+        }
+
+        .notification-item.request {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .notification-item.report {
+            background-color: rgba(255, 99, 71, 0.05);
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid #52c41a;
+        }
+
+        .notification-item.read {
+            opacity: 0.7;
+        }
+
+        .notification-item p {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+            outline: none;
+        }
+
+        .notification-item small {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .notification-item:hover {
+            background-color: #eef2ff;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            padding: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .notification-dropdown.show .notification-dropdown-content {
+            display: block;
+        }
+
+        .notification-delete-btn {
+            font-size: 12px;
+            top: 10px;
+            right: 10px;
+        }
+
         .logout-form {
             display: inline;
             margin: 0;
             padding: 0;
         }
-        
+
         .logout-btn {
             display: inline-flex;
             align-items: center;
@@ -63,11 +208,11 @@
             padding: 0;
             margin: 0;
         }
-        
+
         .logout-btn:hover {
             color: var(--primary-blue);
         }
-        
+
         .consultation-section {
             background: #fff;
             border-radius: 12px;
@@ -75,7 +220,7 @@
             margin-bottom: 25px;
             overflow: hidden;
         }
-        
+
         .section-header {
             padding: 15px 20px;
             border-bottom: 1px solid #f0f0f0;
@@ -83,12 +228,12 @@
             font-size: 16px;
             color: #333;
         }
-        
+
         .chat-list {
             max-height: 350px;
             overflow-y: auto;
         }
-        
+
         .chat-item {
             padding: 15px 20px;
             border-bottom: 1px solid #f0f0f0;
@@ -98,34 +243,34 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .chat-item:hover {
             background-color: #f8f9ff;
         }
-        
+
         .chat-details h3 {
             font-size: 14px;
             margin-bottom: 5px;
             font-weight: 500;
         }
-        
+
         .chat-time {
             font-size: 12px;
             color: #888;
         }
-        
+
         .issue-description {
             margin-top: 5px;
             font-size: 12px;
             color: #666;
             max-width: 400px;
         }
-        
+
         .action-buttons {
             display: flex;
             gap: 8px;
         }
-        
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -138,59 +283,59 @@
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        
+
         .btn-sm {
             padding: 4px 8px;
             font-size: 11px;
         }
-        
+
         .btn-accept {
             background-color: #52c41a;
             color: white;
         }
-        
+
         .btn-accept:hover {
             background-color: #389e0d;
         }
-        
+
         .btn-reject {
             background-color: #ff4d4f;
             color: white;
         }
-        
+
         .btn-reject:hover {
             background-color: #cf1322;
         }
-        
+
         .status-badge {
             padding: 4px 10px;
             border-radius: 50px;
             font-size: 11px;
             font-weight: 500;
         }
-        
+
         .status-badge.active {
             background-color: rgba(82, 196, 26, 0.1);
             color: #52c41a;
         }
-        
+
         .status-badge.pending {
             background-color: rgba(250, 173, 20, 0.1);
             color: #faad14;
         }
-        
+
         .status-badge.completed {
             background-color: rgba(24, 144, 255, 0.1);
             color: #1890ff;
         }
-        
+
         .empty-state {
             padding: 30px 20px;
             text-align: center;
             color: #999;
             font-size: 14px;
         }
-        
+
         .profile-btn {
             display: flex;
             align-items: center;
@@ -204,9 +349,7 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-    
-        
-        
+
         .new-chat-btn {
             width: 100%;
             padding: 12px;
@@ -223,23 +366,23 @@
             justify-content: center;
             gap: 8px;
         }
-        
+
         .new-chat-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 112, 243, 0.4);
         }
-        
+
         .action-btn-container {
             padding: 20px;
         }
-        
+
         .quick-actions {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
-        
+
         .action-link {
             display: flex;
             align-items: center;
@@ -249,15 +392,15 @@
             transition: background-color 0.2s;
             border-bottom: 1px solid #f0f0f0;
         }
-        
+
         .action-link:last-child {
             border-bottom: none;
         }
-        
+
         .action-link:hover {
             background-color: #f8f9ff;
         }
-        
+
         .action-icon {
             width: 36px;
             height: 36px;
@@ -267,22 +410,22 @@
             justify-content: center;
             margin-right: 15px;
         }
-        
+
         .action-icon.history {
             background-color: rgba(82, 196, 26, 0.1);
             color: #52c41a;
         }
-        
+
         .action-icon.settings {
             background-color: rgba(24, 144, 255, 0.1);
             color: #1890ff;
         }
-        
+
         .action-icon.help {
             background-color: rgba(138, 43, 226, 0.1);
             color: #8a2be2;
         }
-        
+
         .anonymity-banner {
             background-color: rgba(24, 144, 255, 0.1);
             border-left: 4px solid #1890ff;
@@ -292,32 +435,32 @@
             display: flex;
             align-items: flex-start;
         }
-        
+
         .anonymity-banner i {
             color: #1890ff;
             margin-right: 12px;
             font-size: 16px;
             margin-top: 2px;
         }
-        
+
         .anonymity-banner h3 {
             font-size: 14px;
             color: #1890ff;
             margin-bottom: 4px;
             font-weight: 600;
         }
-        
+
         .anonymity-banner p {
             font-size: 13px;
             color: #5a9bce;
             margin: 0;
         }
-        
+
         /* Message styles */
         .messages {
             margin-bottom: 15px;
         }
-        
+
         .message {
             padding: 12px 15px;
             margin-bottom: 10px;
@@ -325,25 +468,25 @@
             font-size: 14px;
             position: relative;
         }
-        
+
         .message.success {
             background-color: rgba(82, 196, 26, 0.1);
             border-left: 4px solid #52c41a;
             color: #389e0d;
         }
-        
+
         .message.error {
             background-color: rgba(255, 77, 79, 0.1);
             border-left: 4px solid #ff4d4f;
             color: #cf1322;
         }
-        
+
         .message.info {
             background-color: rgba(24, 144, 255, 0.1);
             border-left: 4px solid #1890ff;
             color: #0050b3;
         }
-        
+
         .message.warning {
             background-color: rgba(250, 173, 20, 0.1);
             border-left: 4px solid #faad14;
@@ -351,13 +494,14 @@
         }
     </style>
 </head>
+
 <body>
     <div class="background">
         <div class="shape shape1"></div>
         <div class="shape shape2"></div>
         <div class="shape shape3"></div>
     </div>
-    
+
     <div class="container">
         <div class="form-container">
             <!-- Header with Logo and User Info -->
@@ -368,10 +512,46 @@
                         <i class="fas fa-user-shield"></i>
                         <span>{{ user.profile.role|default:"Student" }}</span>
                     </div>
+                    <div class="notification-dropdown">
+                        <button id="notification-btn" class="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_notifications %}
+                            <span class="notification-count">{{ unread_notifications.count }}</span>
+                            {% endif %}
+                        </button>
+                        <div class="notification-dropdown-content">
+                            {% for notification in notifications %}
+                            <div class="notification-item 
+                                        {{ notification.notification_type }}  {# message, request, report, other #}
+                                        {% if not notification.is_read %}unread{% else %}read{% endif %}">
+                                {# Türüne göre ikon #}
+                                <i class="notification-icon 
+                                            {% if notification.notification_type == 'message' %}fas fa-envelope
+                                            {% elif notification.notification_type == 'request' %}fas fa-user-plus
+                                            {% elif notification.notification_type == 'report' %}fas fa-flag
+                                            {% else %}fas fa-bell{% endif %}"
+                                    aria-hidden="true"></i>
+
+                                <div class="notification-content">
+                                    <p>{{ notification.message }}</p>
+                                    <small>{{ notification.created_at|timesince }} ago</small>
+                                </div>
+
+                                <button class="notification-delete-btn" data-id="{{ notification.id }}" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">No notifications yet.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
                     <a href="{% url 'profile' %}" class="profile-btn" aria-label="Profile">
                         <i class="profilebtn"></i>
                         <span>Profile</span>
                     </a>
+
                     <form class="logout-form" method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="logout-btn">
@@ -381,7 +561,7 @@
                     </form>
                 </div>
             </div>
-            
+
             <!-- Messages -->
             {% if messages %}
             <div class="messages">
@@ -392,7 +572,7 @@
                 {% endfor %}
             </div>
             {% endif %}
-            
+
             <!-- Anonymity Banner -->
             <div class="anonymity-banner">
                 <i class="fas fa-shield-alt"></i>
@@ -401,7 +581,7 @@
                     <p>Your Safe Space: Everything you share stays completely anonymous, so you can speak freely.</p>
                 </div>
             </div>
-            
+
             {% if pending_requests %}
             <div class="consultation-section mt-8">
                 <div class="section-header text-lg font-semibold mb-4">Requests Sent</div>
@@ -424,7 +604,8 @@
                                 </span>
                                 {% if request.status == 'pending' %}
                                 <div class="action-buttons">
-                                    <a href="{% url 'delete_request' %}?request_id={{ request.id }}" class="btn btn-sm btn-reject">
+                                    <a href="{% url 'delete_request' %}?request_id={{ request.id }}"
+                                        class="btn btn-sm btn-reject">
                                         <i class="fas fa-trash"></i> Delete request
                                     </a>
                                 </div>
@@ -440,7 +621,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Active Consultations List -->
             <div class="consultation-section">
                 <div class="section-header">Active Chats</div>
@@ -451,17 +632,19 @@
                             <h3>Anonymous Consultation #{{ conversation.id }}</h3>
                             <div class="chat-time">
                                 {% if conversation.get_last_message %}
-                                    Last message: {{ conversation.last_message_time|timesince }} ago
+                                Last message: {{ conversation.last_message_time|timesince }} ago
                                 {% else %}
-                                    No messages yet
+                                No messages yet
                                 {% endif %}
                             </div>
                         </div>
                         <div class="action-buttons">
-                            <a href="{% url 'chat_with_id' conversation_id=conversation.id %}" class="btn btn-sm btn-accept">
+                            <a href="{% url 'chat_with_id' conversation_id=conversation.id %}"
+                                class="btn btn-sm btn-accept">
                                 <i class="fas fa-comment"></i> Continue
                             </a>
-                            <a href="{% url 'delete_chat' conversation_id=conversation.id %}" class="btn btn-sm btn-reject delete-chat-btn" data-id="{{ conversation.id }}">
+                            <a href="{% url 'delete_chat' conversation_id=conversation.id %}"
+                                class="btn btn-sm btn-reject delete-chat-btn" data-id="{{ conversation.id }}">
                                 <i class="fas fa-trash"></i> Delete
                             </a>
                         </div>
@@ -479,7 +662,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Ended Consultations -->
             <div class="consultation-section">
                 <div class="section-header">Completed Chats</div>
@@ -493,10 +676,12 @@
                             </div>
                         </div>
                         <div class="action-buttons">
-                            <a href="{% url 'chat_with_id' conversation_id=conversation.id %}" class="btn btn-sm btn-accept">
+                            <a href="{% url 'chat_with_id' conversation_id=conversation.id %}"
+                                class="btn btn-sm btn-accept">
                                 <i class="fas fa-history"></i> View
                             </a>
-                            <a href="{% url 'delete_chat' conversation_id=conversation.id %}" class="btn btn-sm btn-reject delete-chat-btn" data-id="{{ conversation.id }}">
+                            <a href="{% url 'delete_chat' conversation_id=conversation.id %}"
+                                class="btn btn-sm btn-reject delete-chat-btn" data-id="{{ conversation.id }}">
                                 <i class="fas fa-trash"></i> Delete
                             </a>
                         </div>
@@ -508,72 +693,154 @@
                     {% endfor %}
                 </div>
             </div>
-            
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <div class="section-header">Quick Actions</div>
-                
-                <a href="#" class="action-link">
-                    <div class="action-icon history">
-                        <i class="fas fa-history"></i>
+            <div class="consultation-section">
+                <div class="section-header">Notifications </div>
+                <div class="notification-list">
+                    {% for notification in notifications %}
+                    <div class="notification-item">
+                        <p>{{ notification.message }}</p>
                     </div>
-                    <span>Show Chat History</span>
-                </a>
-                
-                <a href="#" class="action-link">
-                    <div class="action-icon settings">
-                        <i class="fas fa-comment-dots"></i>
+                    {% empty %}
+                    <div class="empty-state">
+                        No notifications yet.
                     </div>
-                    <span>Give Feedback</span>
-                </a>
-                
-                <a href="#" class="action-link">
-                    <div class="action-icon help">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <span>Help & Support</span>
-                </a>
+                    {% endfor %}
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="section-header">Quick Actions</div>
+
+                    <a href="#" class="action-link">
+                        <div class="action-icon history">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <span>Show Chat History</span>
+                    </a>
+
+                    <a href="#" class="action-link">
+                        <div class="action-icon settings">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <span>Give Feedback</span>
+                    </a>
+
+                    <a href="#" class="action-link">
+                        <div class="action-icon help">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <span>Help & Support</span>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <script src="{% static 'chat_app/js/script.js' %}"></script>
-    <script>
-        // Chat item click handlers
-        document.addEventListener("DOMContentLoaded", function() {
-            // Add event listeners to active conversations
-            const chatItems = document.querySelectorAll('.chat-item');
-            chatItems.forEach(function(item) {
-                if (item.id && item.id.startsWith('chatItem')) {
-                    item.addEventListener('click', function() {
-                        const conversationId = item.id.replace('chatItem', '');
-                        window.location.href = "/chat/" + conversationId + "/";
+
+        <script src="{% static 'chat_app/js/script.js' %}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // --- Chat item click handlers ---
+                const chatItems = document.querySelectorAll('.chat-item');
+                chatItems.forEach(item => {
+                    if (item.id && item.id.startsWith('chatItem')) {
+                        item.addEventListener('click', () => {
+                            const conversationId = item.id.replace('chatItem', '');
+                            window.location.href = `/chat/${conversationId}/`;
+                        });
+                    }
+                });
+
+                // --- New chat button ---
+                const newChatBtn = document.getElementById('newChatBtn');
+                if (newChatBtn) {
+                    newChatBtn.addEventListener('click', () => {
+                        window.location.href = "{% url 'find_psych_student' %}";
+                    });
+                }
+
+                // --- Delete chat button ---
+                document.querySelectorAll('.delete-chat-btn').forEach(btn => {
+                    btn.addEventListener('click', event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const conversationId = btn.getAttribute('data-id');
+                        if (confirm('Are you sure you want to delete this chat?')) {
+                            const url = "{% url 'delete_chat' conversation_id=0 %}".replace('0', conversationId);
+                            window.location.href = url;
+                        }
+                    });
+                });
+
+                // --- Notification dropdown & "mark as read" ---
+                const notifBtn = document.getElementById('notification-btn');
+                const notifDropdown = document.querySelector('.notification-dropdown');
+                if (notifBtn && notifDropdown) {
+                    notifBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const isOpening = !notifDropdown.classList.contains('show');
+                        notifDropdown.classList.toggle('show');
+
+                        if (isOpening) {
+                            
+                            fetch("{% url 'mark_notifications_read' %}", {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token }}',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({})  
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Connection Error: ' + response.status);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        const badge = document.querySelector('.notification-count');
+                                        if (badge) badge.remove();
+                                    } else {
+                                        console.error('Error mark-as-read:', data.error);
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error('Fetch error:', err);
+                                });
+                        }
+                    });
+                    document.addEventListener('click', e => {
+                        const btn = e.target.closest('.notification-delete-btn');
+                        if (!btn) return;
+                        e.stopPropagation();
+                        if (!confirm('Confirm delete?')) return;
+
+                        fetch(`/notifications/delete/${btn.dataset.id}/`, {
+                            method: 'POST',
+                            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                        })
+                            .then(r => r.json())
+                            .then(d => {
+                                if (!d.success) return;
+                                const item = btn.closest('.notification-item');
+                                item.remove();
+                                const badge = document.querySelector('.notification-count');
+                                if (badge) {
+                                    const n = +badge.textContent - 1;
+                                    n ? badge.textContent = n : badge.remove();
+                                }
+                            })
+                            .catch(console.error);
+                    });
+
+                    document.addEventListener('click', e => {
+                        if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                            notifDropdown.classList.remove('show');
+                        }
                     });
                 }
             });
+        </script>
 
-            // New chat button functionality
-            var newChatBtn = document.getElementById('newChatBtn');
-            if (newChatBtn) {
-                newChatBtn.addEventListener('click', function() {
-                    window.location.href = "{% url 'find_psych_student' %}";
-                });
-            }
-            
-            // Delete chat button functionality
-            const deleteChatBtns = document.querySelectorAll('.delete-chat-btn');
-            deleteChatBtns.forEach(btn => {
-                btn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    const conversationId = this.getAttribute('data-id');
-                    
-                    if (confirm('Bu sohbet oturumunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve tüm mesajlar kalıcı olarak silinecektir.')) {
-                        window.location.href = "{% url 'delete_chat' conversation_id=0 %}".replace('0', conversationId);
-                    }
-                });
-            });
-        });
-    </script>
 </body>
-</html> 
+
+</html>

@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth.models import User
-from .models import UserProfile, Message, ChatSession, PsychologyStudentProfile, ExpertiseArea, Report, ChatRequest
+from .models import UserProfile, Message, ChatSession, PsychologyStudentProfile, ExpertiseArea, Report, ChatRequest, Notification
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Q
@@ -70,6 +70,8 @@ def login_view(request):
 def home(request):
     try:
         user_profile = UserProfile.objects.get(user=request.user)
+        unread_notifications = Notification.objects.filter(receiver=user_profile, is_read=False).order_by('-created_at')
+        all_notifications = Notification.objects.filter(receiver=user_profile).order_by('-created_at')
         
         if user_profile.is_psych_student:
             return redirect('psychology_student_home')
@@ -83,7 +85,7 @@ def home(request):
         else:
             active_conversations = ChatSession.objects.filter(normal_user=user_profile, is_active=True).order_by('-last_message_time')
             ended_conversations = ChatSession.objects.filter(normal_user=user_profile, is_active=False).order_by('-last_message_time')
-        
+
         for session in active_conversations:
             session.unread_count = session.get_unread_count(user_profile)
         
@@ -98,7 +100,10 @@ def home(request):
             'active_conversations': active_conversations,
             'ended_conversations': ended_conversations if 'ended_conversations' in locals() else [],
             'user_profile': user_profile,
-            'pending_requests': pending_requests
+            'pending_requests': pending_requests,
+            'notifications': all_notifications,
+            'unread_notifications': unread_notifications,
+            'unread_notification_count': unread_notifications.count()
         })
         
     except UserProfile.DoesNotExist:
@@ -739,3 +744,23 @@ def update_availability(request):
             return redirect('home')
     
     return redirect('psychology_student_home')
+def create_notification(user_profile, message, notification_type):
+    Notification.objects.create(
+        receiver=user_profile,
+        message=message,
+        notification_type=notification_type
+    )
+@login_required
+def mark_notifications_read(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    Notification.objects.filter(receiver=user_profile, is_read=False).update(is_read=True)
+    return JsonResponse({'success': True,})
+def delete_notification(request, notification_id):
+    user_profile= UserProfile.objects.get(user=request.user)
+    notif = get_object_or_404(
+        Notification,
+        id=notification_id,
+        receiver=user_profile
+    )
+    notif.delete()
+    return JsonResponse({"success": True})
