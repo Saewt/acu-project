@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 from django.utils import timezone
+from django_cryptography.fields import encrypt
 
 def generate_anonymous_id():
     return get_random_string(length=10)
@@ -76,7 +77,7 @@ class ChatSession(models.Model):
 class Message(models.Model):
     chat_session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = encrypt(models.TextField())
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     is_flagged = models.BooleanField(default=False)

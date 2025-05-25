@@ -19,6 +19,7 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             font-size: 1rem;
             position: relative;
+            animation: slideInRight 0.3s ease-out;
         }
         
         .message-received {
@@ -30,6 +31,7 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             font-size: 1rem;
             position: relative;
+            animation: slideInLeft 0.3s ease-out;
         }
         
         .message-text {
@@ -51,6 +53,185 @@
         .message-received .message-timestamp {
             color: rgba(55, 65, 81, 0.7);
         }
+
+        /* Enhanced animations */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Message status indicators */
+        .message-status {
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .message-sending {
+            opacity: 0.7;
+        }
+
+        .message-sent .message-status {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: #f3f4f6;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            animation: slideInLeft 0.3s ease-out;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .typing-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Enhanced input area */
+        .input-container {
+            position: relative;
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+
+        .char-counter.error {
+            color: #ef4444;
+        }
+
+        /* Scroll to bottom button */
+        .scroll-to-bottom {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(1rem);
+            pointer-events: none;
+        }
+
+        .scroll-to-bottom.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .scroll-to-bottom:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 640px) {
+            .message-sent,
+            .message-received {
+                max-width: 90%;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Message reactions */
+        .message-reactions {
+            display: flex;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .reaction {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reaction:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Loading states */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen font-inter flex flex-col">
@@ -59,12 +240,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{% url 'home' %}" class="text-gray-500 hover:text-gray-700 mr-4">
+                    <a href="{% url 'home' %}" class="text-gray-500 hover:text-gray-700 mr-4 transition-colors duration-200">
                         <i class="fas fa-arrow-left"></i>
                         <span class="ml-2">Back to Dashboard</span>
                     </a>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center space-x-3">
                     <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium flex items-center">
                         <i class="fas fa-shield-alt mr-1"></i>
                         <span>Anonymous Consultation</span>
@@ -89,12 +270,13 @@
                         {{ chat_session.normal_user.anonymous_id }}
                         {% endif %}</p>
                     <p class="text-sm text-gray-500">Started: {{ chat_session.created_at|date:"j M Y" }}</p>
+                    <div id="lastSeen" class="text-xs text-gray-400 mt-1"></div>
                 </div>
                 <div class="flex space-x-2">
-                    <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+                    <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200" title="Chat info">
                         <i class="fas fa-info-circle"></i>
                     </button>
-                    <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+                    <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200" title="More options">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
@@ -102,7 +284,7 @@
         </div>
 
         <!-- Chat Messages -->
-        <div id="chatMessages" class="flex-1 bg-white overflow-y-auto p-4" style="min-height: 400px; max-height: calc(100vh - 240px);">
+        <div id="chatMessages" class="flex-1 bg-white overflow-y-auto p-4 relative" style="min-height: 400px; max-height: calc(100vh - 240px);">
             <!-- Anonymity Notice -->
             <div class="flex justify-center mb-6">
                 <div class="bg-blue-50 text-blue-800 text-xs rounded-md px-3 py-2 max-w-md text-center">
@@ -126,6 +308,9 @@
                         <div class="message-sent">
                             <p class="message-text">{{ message.content }}</p>
                             <p class="message-timestamp">{{ message.timestamp|time:"H:i" }}</p>
+                            <div class="message-status">
+                                <i class="fas fa-check text-xs"></i>
+                            </div>
                         </div>
                     </div>
                 {% else %}
@@ -145,6 +330,21 @@
                     </div>
                 </div>
             {% endfor %}
+
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="typing-indicator" style="display: none;">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <span class="ml-2 text-sm text-gray-600">Partner is typing...</span>
+            </div>
+
+            <!-- Scroll to Bottom Button -->
+            <div id="scrollToBottom" class="scroll-to-bottom">
+                <i class="fas fa-chevron-down"></i>
+            </div>
         </div>
 
         <!-- Chat Input -->
@@ -152,21 +352,29 @@
             <form id="messageForm" class="flex items-end">
                 {% csrf_token %}
                 <input type="hidden" id="conversationId" value="{{ conversation_id }}">
-                <div class="flex-1 mr-4">
-                    <textarea id="messageInput" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="Type your message..." rows="1"></textarea>
+                <div class="flex-1 mr-4 input-container">
+                    <textarea 
+                        id="messageInput" 
+                        class="w-full border border-gray-300 rounded-lg p-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200" 
+                        placeholder="Type your message..." 
+                        rows="1"
+                        maxlength="1000"
+                        aria-label="Message input"></textarea>
+                    <div id="charCounter" class="char-counter">0/1000</div>
                 </div>
                 <button type="submit"
+                        id="sendButton"
                         class="bg-blue-600 text-white rounded-lg p-3 flex-shrink-0
                                hover:bg-blue-700 transition duration-150 ease-in-out
                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                               active:bg-blue-800">
+                               active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Send message">
                     <i class="fas fa-paper-plane"></i>
-                    <span class="sr-only">Send message</span>
                 </button>
             </form>
             <div class="mt-2 text-xs text-gray-500 flex items-center">
                 <i class="fas fa-shield-alt mr-1 text-blue-600"></i>
-                <span>Your identity remains anonymous during </span>
+                <span>Your identity remains anonymous during this conversation</span>
             </div>
         </div>
     </div>
@@ -175,6 +383,11 @@
     <script>
         const currentUserProfileId = "{{ user_profile.id }}";
         let lastMsgId = 0;
+        let isTyping = false;
+        let typingTimeout;
+        let reconnectAttempts = 0;
+        let maxReconnectAttempts = 5;
+        let pollingInterval = 3000;
         
         const DEBUG = true;
         function log(message, data) {
@@ -182,10 +395,64 @@
                 console.log(`[TeaTalk Debug] ${message}`, data || '');
             }
         }
-        
+
+
+        // Character counter functionality
+        function updateCharCounter() {
+            const messageInput = document.getElementById('messageInput');
+            const charCounter = document.getElementById('charCounter');
+            const currentLength = messageInput.value.length;
+            const maxLength = 1000;
+            
+            charCounter.textContent = `${currentLength}/${maxLength}`;
+            
+            if (currentLength > maxLength * 0.9) {
+                charCounter.className = 'char-counter error';
+            } else if (currentLength > maxLength * 0.8) {
+                charCounter.className = 'char-counter warning';
+            } else {
+                charCounter.className = 'char-counter';
+            }
+        }
+
+        // Scroll to bottom functionality
+        function updateScrollButton() {
+            const chatMessages = document.getElementById('chatMessages');
+            const scrollButton = document.getElementById('scrollToBottom');
+            const isNearBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 100;
+            
+            if (isNearBottom) {
+                scrollButton.classList.remove('visible');
+            } else {
+                scrollButton.classList.add('visible');
+            }
+        }
+
+        function scrollToBottom(smooth = true) {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTo({
+                top: chatMessages.scrollHeight,
+                behavior: smooth ? 'smooth' : 'auto'
+            });
+        }
+
+        // Enhanced typing indicator
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'flex';
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+        }
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const conversationId = document.getElementById('conversationId').value;
             log('Conversation ID from form:', conversationId);
+            
             
             if (!conversationId) {
                 console.error('Missing conversation ID in chat view');
@@ -203,7 +470,24 @@
             const chatMessages = document.getElementById('chatMessages');
             if (chatMessages) {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Add scroll event listener
+                chatMessages.addEventListener('scroll', updateScrollButton);
             }
+            
+            // Scroll to bottom button click handler
+            document.getElementById('scrollToBottom').addEventListener('click', () => {
+                scrollToBottom();
+            });
+            
+            // Notification toggle
+            document.getElementById('toggleNotifications').addEventListener('click', function() {
+                notificationsEnabled = !notificationsEnabled;
+                this.innerHTML = notificationsEnabled ? 
+                    '<i class="fas fa-bell"></i>' : 
+                    '<i class="fas fa-bell-slash"></i>';
+                this.title = notificationsEnabled ? 'Disable notifications' : 'Enable notifications';
+            });
             
             const messageElements = document.querySelectorAll('.message-sent, .message-received');
             if (messageElements.length > 0) {
@@ -216,6 +500,7 @@
         document.getElementById('messageForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
             const message = messageInput.value.trim();
             const conversationId = document.getElementById('conversationId').value;
             
@@ -224,23 +509,30 @@
                 return;
             }
             
-            if (message) {
+            if (message && message.length <= 1000) {
+                // Disable send button to prevent double sending
+                sendButton.disabled = true;
+                
                 const tempId = `temp_${Date.now()}`;
                 
                 const chatMessages = document.getElementById('chatMessages');
                 const messageElement = document.createElement('div');
-                messageElement.className = 'flex justify-end mb-6 pending-message';
+                messageElement.className = 'flex justify-end mb-6 pending-message message-sending';
                 messageElement.id = tempId;
                 messageElement.innerHTML = `
                     <div class="message-sent">
                         <p class="message-text">${message}</p>
                         <p class="message-timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}</p>
+                        <div class="message-status">
+                            <i class="fas fa-clock text-xs"></i>
+                        </div>
                     </div>
                 `;
                 chatMessages.appendChild(messageElement);
                 
                 messageInput.value = '';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                updateCharCounter();
+                scrollToBottom();
                 
                 fetch('{% url "send_message" %}', {
                     method: 'POST',
@@ -262,6 +554,8 @@
                     return response.json();
                 })
                 .then(data => {
+                    sendButton.disabled = false;
+                    
                     if (data.error) {
                         console.error('Error sending message:', data.error);
                         alert('Error sending message: ' + data.error);
@@ -271,9 +565,15 @@
                         log('Message sent successfully:', data);
                         const confirmedMsg = document.getElementById(tempId);
                         if (confirmedMsg) {
-                            confirmedMsg.classList.remove('pending-message');
+                            confirmedMsg.classList.remove('pending-message', 'message-sending');
                             confirmedMsg.removeAttribute('id');
                             confirmedMsg.setAttribute('data-message-id', data.message_id);
+                            
+                            // Update status to sent
+                            const statusElement = confirmedMsg.querySelector('.message-status');
+                            if (statusElement) {
+                                statusElement.innerHTML = '<i class="fas fa-check text-xs"></i>';
+                            }
                         }
                         
                         if (data.message_id && data.message_id > lastMsgId) {
@@ -286,12 +586,34 @@
                 })
                 .catch(error => {
                     console.error('Error sending message:', error);
-                    alert('Failed to send message. Please try again later.');
+                    sendButton.disabled = false;
+                    
+                    // Show retry option
                     const pendingMsg = document.getElementById(tempId);
-                    if (pendingMsg) pendingMsg.remove();
+                    if (pendingMsg) {
+                        pendingMsg.innerHTML = `
+                            <div class="message-sent bg-red-500">
+                                <p class="message-text">${message}</p>
+                                <p class="message-timestamp">Failed to send</p>
+                                <div class="message-status">
+                                    <button onclick="retryMessage('${tempId}', '${message.replace(/'/g, "\\'")}', '${conversationId}')" class="text-xs underline">Retry</button>
+                                </div>
+                            </div>
+                        `;
+                    }
                 });
             }
         });
+
+        // Retry failed message
+        window.retryMessage = function(tempId, message, conversationId) {
+            const failedMsg = document.getElementById(tempId);
+            if (failedMsg) failedMsg.remove();
+            
+            // Re-trigger send
+            document.getElementById('messageInput').value = message;
+            document.getElementById('messageForm').dispatchEvent(new Event('submit'));
+        };
         
         function fetchNewMessages() {
             const conversationId = document.getElementById('conversationId').value;
@@ -313,6 +635,7 @@
             .then(response => {
                 if (!response.ok) {
                     log('Error response from server:', response.status);
+                    
                     if (response.status === 400 && lastMessageTime !== '0') {
                         log('Resetting timestamp due to error');
                         localStorage.removeItem(`lastMessageTime_${conversationId}`);
@@ -348,9 +671,15 @@
                                 <div class="${isSent ? 'message-sent' : 'message-received'}">
                                     <p class="message-text">${message.content}</p>
                                     <p class="message-timestamp">${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}</p>
+                                    ${isSent ? '<div class="message-status"><i class="fas fa-check text-xs"></i></div>' : ''}
                                 </div>
                             `;
                             chatMessages.appendChild(messageElement);
+                            
+                            // Show notification for received messages
+                            if (!isSent) {
+                                showNotification('New Message', message.content.substring(0, 50) + (message.content.length > 50 ? '...' : ''));
+                            }
                             
                             if (message.id > lastMsgId) {
                                 lastMsgId = message.id;
@@ -359,7 +688,7 @@
                     });
                     
                     if (addedNewMessage) {
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        scrollToBottom();
                     }
                 }
                 
@@ -367,30 +696,65 @@
                     log('Updating last message time to:', data.last_time);
                     localStorage.setItem(`lastMessageTime_${conversationId}`, data.last_time);
                 }
+
+                // Update last seen status
+                if (data.partner_last_seen) {
+                    const lastSeenElement = document.getElementById('lastSeen');
+                    const lastSeenTime = new Date(data.partner_last_seen);
+                    lastSeenElement.textContent = `Last seen: ${lastSeenTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
             })
             .catch(error => {
                 console.error('Error fetching messages:', error);
+                
+                // Implement exponential backoff for reconnection
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+                    setTimeout(() => {
+                        fetchNewMessages();
+                    }, delay);
+                }
             });
         }
         
-        let messagePollingInterval = setInterval(fetchNewMessages, 3000);
+        let messagePollingInterval = setInterval(fetchNewMessages, pollingInterval);
+        
         
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'hidden') {
                 clearInterval(messagePollingInterval);
                 log('Polling paused - page hidden');
             } else {
-                messagePollingInterval = setInterval(fetchNewMessages, 3000);
+                messagePollingInterval = setInterval(fetchNewMessages, pollingInterval);
                 log('Polling resumed - page visible');
                 fetchNewMessages();
             }
         });
         
         const messageInput = document.getElementById('messageInput');
+        
         messageInput.addEventListener('input', function() {
+            
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
+            
+            
+            updateCharCounter();
+            handleTyping();
         });
+
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('messageForm').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        
+        updateCharCounter();
+        // todo typing indicator,read status
+        
     </script>
 </body>
 </html>

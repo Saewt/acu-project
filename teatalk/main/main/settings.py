@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'chat_app',
     'channels',
     'rest_framework',
+    'django_cryptography',
 ]
 
 MIDDLEWARE = [
