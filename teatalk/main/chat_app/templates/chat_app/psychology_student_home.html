@@ -342,12 +342,12 @@
         }
         
         .status-toggle {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            margin-right: 15px;
-            padding: 0;
-            background: none;
-            border: none;
+            gap: 8px
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            
         }
         
         .switch {
@@ -400,6 +400,84 @@
             font-weight: 500;
             font-size: 13px;
         }
+        
+        .notification-dropdown {
+            position: relative;
+        }
+        
+        .notification-btn {
+            background: none;
+            color: var(--primary-blue);
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            position: relative;
+        }
+        
+        .notification-count {
+            background-color: #ff4d4f;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        .notification-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            max-height: 300px;
+            padding: 8px 0;
+            overflow-y: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+        
+        .notification-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            gap: 8px;
+        }
+        
+        .notification-icon {
+            font-size: 14px;
+            margin-right: 6px;
+            color: var(--primary-blue);
+            flex-shrink: 0;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-item.unread {
+            border-left: 4px solid #52c41a;
+        }
+        
+        .notification-dropdown.show .notification-dropdown-content {
+            display: block;
+        }
+        
+        .empty-state {
+            padding: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .notification-delete-btn {
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -419,13 +497,48 @@
                         <i class="fas fa-user-md"></i>
                         <span>Psychology Student</span>
                     </div>
+                    <div class="notification-dropdown">
+                        <button id="notification-btn" class="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_notifications %}
+                            <span class="notification-count">{{ unread_notifications.count }}</span>
+                            {% endif %}
+                        </button>
+                        <div class="notification-dropdown-content">
+                            {% for notification in notifications %}
+                            <div class="notification-item 
+                                        {{ notification.notification_type }}  {# message, request, report, other #}
+                                        {% if not notification.is_read %}unread{% else %}read{% endif %}">
+                                <i class="notification-icon 
+                                            {% if notification.notification_type == 'message' %}fas fa-envelope
+                                            {% elif notification.notification_type == 'request' %}fas fa-user-plus
+                                            {% elif notification.notification_type == 'report' %}fas fa-flag
+                                            {% else %}fas fa-bell{% endif %}"
+                                    aria-hidden="true"></i>
+
+                                <div class="notification-content">
+                                    <p>{{ notification.message }}</p>
+                                    <small>{{ notification.created_at|timesince }} ago</small>
+                                </div>
+
+                                <button class="notification-delete-btn" data-id="{{ notification.id }}" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">No notifications yet.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <form class="status-toggle" method="post" action="{% url 'update_availability' %}">
                         {% csrf_token %}
                         <label class="switch">
                             <input type="checkbox" name="is_available" id="availabilityToggle" {% if user_profile.psych_student_profile.is_available %}checked{% endif %} onchange="this.form.submit()">
                             <span class="slider"></span>
                         </label>
-                        <span class="status-text">{% if user_profile.psych_student_profile.is_available %}Available for Consultations{% else %}Not Available for Consultations{% endif %}</span>
+                        <span class="status-text"
+                        aria-live="polite"
+                        aria-atomic="true">{% if user_profile.psych_student_profile.is_available %}Available for Consultations{% else %}Not Available for Consultations{% endif %}</span>
                     </form>
                     <a href="{% url 'profile' %}" class="profile-btn">
                         <i class="fas fa-user-circle"></i>
@@ -665,7 +778,83 @@
                     }
                 });
             });
+
+            // --- Notification dropdown & "mark as read" ---
+            const notifBtn     = document.getElementById('notification-btn');
+    const notifWrapper = document.querySelector('.notification-dropdown');
+
+    if (notifBtn && notifWrapper) {
+        // Aç/Kapa + mark as read
+        notifBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpening = !notifWrapper.classList.contains('show');
+            notifWrapper.classList.toggle('show');
+
+            if (isOpening) {
+                fetch("{% url 'mark_notifications_read' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Connection Error: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Badge’i kaldır
+                        const badge = document.querySelector('.notification-count');
+                        if (badge) badge.remove();
+                        // Tüm unread class’larını temizle
+                        document.querySelectorAll('.notification-item.unread')
+                                .forEach(item => item.classList.remove('unread'));
+                    }
+                })
+                .catch(console.error);
+            }
         });
+
+        // Silme butonunu dinle
+        document.addEventListener('click', function(e) {
+            const delBtn = e.target.closest('.notification-delete-btn');
+            if (!delBtn) return;
+            e.stopPropagation();
+            if (!confirm('Are')) return;
+
+            const url = "{% url 'delete_notification' 0 %}".replace('0', delBtn.dataset.id);
+            fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const item = delBtn.closest('.notification-item');
+                    if (item) item.remove();
+
+                    // Badge sayısını güncelle
+                    const badge = document.querySelector('.notification-count');
+                    if (badge) {
+                        let count = parseInt(badge.textContent, 10) - 1;
+                        if (count > 0) badge.textContent = count;
+                        else badge.remove();
+                    }
+                }
+            })
+            .catch(console.error);
+        });
+
+        // Dropdown dışında tıklanınca kapat
+        document.addEventListener('click', function(e) {
+            if (!notifWrapper.contains(e.target) && !notifBtn.contains(e.target)) {
+                notifWrapper.classList.remove('show');
+            }
+        });
+    }
+});
     </script>
 </body>
 </html> 

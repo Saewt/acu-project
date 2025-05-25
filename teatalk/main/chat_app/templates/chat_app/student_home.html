@@ -693,38 +693,10 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="consultation-section">
-                <div class="section-header">Notifications </div>
-                <div class="notification-list">
-                    {% for notification in notifications %}
-                    <div class="notification-item">
-                        <p>{{ notification.message }}</p>
-                    </div>
-                    {% empty %}
-                    <div class="empty-state">
-                        No notifications yet.
-                    </div>
-                    {% endfor %}
-                </div>
 
                 <!-- Quick Actions -->
                 <div class="quick-actions">
                     <div class="section-header">Quick Actions</div>
-
-                    <a href="#" class="action-link">
-                        <div class="action-icon history">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <span>Show Chat History</span>
-                    </a>
-
-                    <a href="#" class="action-link">
-                        <div class="action-icon settings">
-                            <i class="fas fa-comment-dots"></i>
-                        </div>
-                        <span>Give Feedback</span>
-                    </a>
-
                     <a href="#" class="action-link">
                         <div class="action-icon help">
                             <i class="fas fa-question-circle"></i>

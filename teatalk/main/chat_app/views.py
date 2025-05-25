@@ -557,8 +557,13 @@ def send_request(request):
                 psych_student=psych_student_profile,
                 issue_description=issue_description
             )
-            
+            Notification.objects.create(
+                receiver= psych_student_profile,
+                message=f"You have a new chat request from {normal_user_profile.anonymous_id}.",
+                notification_type='request'
+            )
             # Future: Send email notification to psychology student
+
             
             messages.success(request, "Your request has been sent. You'll be notified when the psychology student accepts.")
             
@@ -655,6 +660,9 @@ def delete_request(request):
 def psychology_student_home(request):
     try:
         user_profile = UserProfile.objects.get(user=request.user)
+        unread_notifications = Notification.objects.filter(receiver=user_profile, is_read=False).order_by('-created_at')
+        all_notifications = Notification.objects.filter(receiver=user_profile).order_by('-created_at')
+
         
         if not user_profile.is_psych_student:
             return redirect('home')
@@ -681,6 +689,9 @@ def psychology_student_home(request):
             'active_cases': active_conversations.count(),
             'completed_cases': ended_conversations.count(),
             'user_profile': user_profile,
+            'notifications': all_notifications,
+            'unread_notifications': unread_notifications,
+            'unread_notification_count': unread_notifications.count()
         }
         
         return render(request, 'chat_app/psychology_student_home.html', context)
