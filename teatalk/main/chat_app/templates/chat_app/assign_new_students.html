@@ -1,0 +1,475 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - Assign Students</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}"> {# Assuming your main styles are here #}
+    <style>
+        /* General Layout & Container */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .form-container {
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            color: #3f51b5; /* Example primary blue, adjust if you have a --primary-blue var */
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-role {
+            background-color: rgba(184, 134, 11, 0.1);
+            color: #b8860b;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        .user-role i {
+            color: #b8860b;
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+        .logout-btn:hover {
+            color: #3f51b5; /* Example hover color */
+            background-color: #f0f2f5;
+        }
+
+        /* Messages */
+        .messages {
+            margin-bottom: 20px;
+        }
+        .message {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .message.success { background-color: #e6ffed; border-left: 4px solid #52c41a; color: #389e0d; }
+        .message.error { background-color: #fff0f6; border-left: 4px solid #ff4d4f; color: #cf1322; }
+        .message.info { background-color: #e6f7ff; border-left: 4px solid #1890ff; color: #0050b3; }
+        .message.warning { background-color: #fffbe6; border-left: 4px solid #faad14; color: #d48806; }
+
+        /* Supervisor Banner */
+        .supervisor-banner {
+            background-color: rgba(184, 134, 11, 0.1);
+            border-left: 4px solid #b8860b;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .supervisor-banner i {
+            color: #b8860b;
+            margin-right: 15px;
+            font-size: 18px;
+            margin-top: 3px;
+        }
+        .supervisor-banner h3 {
+            font-size: 16px;
+            color: #b8860b;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .supervisor-banner p {
+            font-size: 14px;
+            color: rgba(184, 134, 11, 0.8);
+            margin: 0;
+        }
+        
+        /* Main Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 25px; /* Added for spacing if column is single */
+        }
+        .card-header {
+            padding: 18px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            font-size: 17px;
+            color: #333;
+            background-color: #fcfcfc;
+        }
+
+        /* Student List */
+        .student-list {
+            max-height: 500px; /* Increased slightly for more content */
+            overflow-y: auto;
+            padding: 0; /* Remove default ul/ol padding */
+            list-style: none; /* Remove default list style */
+        }
+        .student-item {
+            padding: 18px 25px;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background-color 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow content to wrap on smaller screens */
+            gap: 15px; /* Space between info and button */
+        }
+        .student-item:last-child {
+            border-bottom: none;
+        }
+        .student-item:hover {
+            background-color: #f8faff;
+        }
+
+        .student-info {
+            flex-grow: 1; /* Allow info to take available space */
+            min-width: 200px; /* Ensure it doesn't shrink too much */
+        }
+
+        .student-info h3 {
+            font-size: 16px; /* Slightly larger for prominence */
+            margin-bottom: 8px; /* More space below name */
+            font-weight: 600;
+            color: #333;
+        }
+
+        .student-details {
+            font-size: 13px; /* Slightly smaller for details */
+            color: #555;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Space between each detail item */
+            line-height: 1.5;
+        }
+        .detail-label {
+            font-weight: 500;
+            color: #777; /* Muted color for labels */
+        }
+        .detail-value {
+            color: #333; /* More prominent color for values */
+        }
+        .detail-separator {
+            color: #ccc; /* Subtle separator color */
+            margin: 0 5px;
+        }
+        .expertise-areas {
+            display: inline; /* Keep expertise on the same line if possible */
+            font-size: 12.5px; /* Slightly smaller font for tags */
+        }
+        .expertise-area-item {
+            background-color: #e6f7ff; /* Light blue tag background */
+            color: #1890ff; /* Blue text */
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            margin-right: 5px; /* Space between tags */
+            display: inline-block; /* Allow proper padding/margin */
+        }
+        .expertise-area-item:last-child {
+            margin-right: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            border-radius: 50px;
+            padding: 8px 18px; /* Increased padding for better click area */
+            font-size: 13px; /* Adjusted font size */
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px; /* Space between icon and text */
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Subtle shadow */
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #4a90e2, #6a7ecf); /* Example gradient, adjust if you have vars */
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 15px;
+            background-color: #fdfdfd;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        .empty-state i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        /* Assignment Stats */
+        .stats-grid {
+            padding: 25px;
+            display: grid;
+            gap: 20px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: #f7f9fc;
+            border-radius: 8px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Quick Actions */
+        .action-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .action-link:last-child {
+            border-bottom: none;
+        }
+        .action-link:hover {
+            background-color: #f8faff;
+        }
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        .action-icon.navigation {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: #1890ff;
+        }
+
+        /* Background Shapes (if you want to keep them) */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Send to background */
+        }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(50px);
+        }
+        .shape1 {
+            width: 200px;
+            height: 200px;
+            background: #a8dadc;
+            top: 10%;
+            left: 5%;
+        }
+        .shape2 {
+            width: 300px;
+            height: 300px;
+            background: #457b9d;
+            bottom: 15%;
+            right: 10%;
+        }
+        .shape3 {
+            width: 250px;
+            height: 250px;
+            background: #f1faee;
+            top: 50%;
+            left: 30%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <div class="logo">TeaTalk</div>
+                <div class="user-info">
+                    <div class="user-role">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Supervisor</span>
+                    </div>
+                    <form class="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            <span>Logout</span>
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="supervisor-banner">
+                <i class="fas fa-user-plus"></i>
+                <div>
+                    <h3>Assign Psychology Students</h3>
+                    <p>Select a psychology student from the list and assign them to your supervision.</p>
+                </div>
+            </div>
+
+            <div class="main-grid">
+                <div class="left-column">
+                    <div class="card">
+                        <div class="card-header">
+                            Available Psychology Students
+                        </div>
+                        <div class="student-list">
+                            {% for student in available_students %}
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <h3>
+                                        {{ student.user.get_full_name|default:student.user.username }}
+                                    </h3>
+                                    <div class="student-details">
+                                        {% if student.psych_student_profile %}
+                                            <span class="detail-label">Year:</span> <span class="detail-value">{{ student.psych_student_profile.school_year }}</span> <span class="detail-separator">|</span>
+                                            <span class="detail-label">Available:</span> <span class="detail-value">{% if student.psych_student_profile.is_available %}Yes{% else %}No{% endif %}</span>
+                                            {% if student.psych_student_profile.expertise_areas.all %}
+                                                <span class="detail-separator">|</span> <span class="detail-label">Expertise:</span>
+                                                <span class="expertise-areas">
+                                                {% for area in student.psych_student_profile.expertise_areas.all %}
+                                                    <span class="expertise-area-item">{{ area.name }}</span>{% if not forloop.last %},{% endif %}
+                                                {% endfor %}
+                                                </span>
+                                            {% endif %}
+                                            {% if student.psych_student_profile.bio %}
+                                                 <span class="detail-separator">|</span> <span class="detail-label">Bio:</span> <span class="detail-value">{{ student.psych_student_profile.bio|truncatechars:50 }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span>No detailed profile available.</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'assign_students' %}" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-user-plus"></i> Assign
+                                    </button>
+                                </form>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <p>No available psychology students to assign at the moment.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+
+                    <div class="card">
+                        <div class="card-header">Quick Actions</div>
+                        <a href="{% url 'home' %}" class="action-link">
+                            <div class="action-icon navigation"> <i class="fas fa-arrow-left"></i>
+                            </div>
+                            <span>Back to Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="{% static 'chat_app/js/script.js' %}"></script>
+</body>
+</html>

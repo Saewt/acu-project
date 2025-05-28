@@ -1,6 +1,3 @@
-<!-- supervisor_home.html not ready yet-->
-
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -15,30 +12,25 @@
         .container {
             max-width: 1000px;
         }
-        
         .form-container {
             padding: 30px;
         }
-        
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
         }
-        
         .logo {
             color: var(--primary-blue);
             font-size: 22px;
             font-weight: 700;
         }
-        
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
         .user-role {
             background-color: rgba(184, 134, 11, 0.1);
             color: #b8860b;
@@ -46,13 +38,11 @@
             padding: 4px 12px;
             border-radius: 50px;
         }
-        
         .logout-form {
             display: inline;
             margin: 0;
             padding: 0;
         }
-        
         .logout-btn {
             display: inline-flex;
             align-items: center;
@@ -66,23 +56,19 @@
             padding: 0;
             margin: 0;
         }
-        
         .logout-btn:hover {
             color: var(--primary-blue);
         }
-        
         .main-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 25px;
         }
-        
         @media (max-width: 768px) {
             .main-grid {
                 grid-template-columns: 1fr;
             }
         }
-        
         .card {
             background: #fff;
             border-radius: 12px;
@@ -90,7 +76,6 @@
             margin-bottom: 25px;
             overflow: hidden;
         }
-        
         .card-header {
             padding: 15px 20px;
             border-bottom: 1px solid #f0f0f0;
@@ -98,28 +83,23 @@
             font-size: 16px;
             color: #333;
         }
-        
         .card-header-desc {
             font-size: 12px;
             color: #888;
             font-weight: normal;
             margin-top: 3px;
         }
-        
         .card-header.flagged {
             background-color: rgba(255, 77, 79, 0.1);
             color: #ff4d4f;
         }
-        
         .card-header-desc.flagged {
             color: rgba(255, 77, 79, 0.8);
         }
-        
-        .student-list, .case-list {
+        .student-list, .case-list, .notification-list-items {
             max-height: 350px;
             overflow-y: auto;
         }
-        
         .student-item, .case-item {
             padding: 15px 20px;
             border-bottom: 1px solid #f0f0f0;
@@ -128,37 +108,31 @@
             justify-content: space-between;
             align-items: center;
         }
-        
         .student-item:hover, .case-item:hover {
             background-color: #f8f9ff;
         }
-        
         .student-info h3, .case-info h3 {
             font-size: 14px;
             margin-bottom: 5px;
             font-weight: 500;
         }
-        
         .student-details, .case-details {
             font-size: 12px;
             color: #888;
-            display: flex;
-            align-items: center;
+            /* display: flex; */ /* case-details için flex-direction:column kullanılıyor */
+            /* align-items: center; */
         }
-        
         .flag-indicator {
             color: #ff4d4f;
-            margin-left: 8px;
+            /* margin-left: 8px; */ /* case-details içinde ayarlandı */
             display: flex;
             align-items: center;
             gap: 3px;
         }
-        
         .action-buttons {
             display: flex;
             gap: 8px;
         }
-        
         .btn {
             border: none;
             border-radius: 50px;
@@ -171,61 +145,50 @@
             align-items: center;
             gap: 5px;
         }
-        
         .btn-primary {
             background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
             color: white;
         }
-        
         .btn-secondary {
             background-color: #f0f0f0;
             color: #666;
         }
-        
         .btn-danger {
             background-color: #ff4d4f;
             color: white;
         }
-        
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
-        .empty-state {
+        .empty-state, .notification-item-empty {
             padding: 30px 20px;
             text-align: center;
             color: #999;
             font-size: 14px;
         }
-        
         .stats-grid {
             padding: 20px;
             display: grid;
             gap: 15px;
         }
-        
         .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
         .stat-label {
             font-size: 13px;
             color: #666;
         }
-        
         .stat-value {
             font-size: 18px;
             font-weight: 600;
             color: #333;
         }
-        
         .stat-value.alert {
             color: #ff4d4f;
         }
-        
         .action-link {
             display: flex;
             align-items: center;
@@ -235,15 +198,12 @@
             transition: background-color 0.2s;
             border-bottom: 1px solid #f0f0f0;
         }
-        
         .action-link:last-child {
             border-bottom: none;
         }
-        
         .action-link:hover {
             background-color: #f8f9ff;
         }
-        
         .action-icon {
             width: 36px;
             height: 36px;
@@ -253,32 +213,11 @@
             justify-content: center;
             margin-right: 15px;
         }
-        
-        .action-icon.review {
-            background-color: rgba(103, 58, 183, 0.1);
-            color: #673ab7;
-        }
-        
-        .action-icon.schedule {
-            background-color: rgba(82, 196, 26, 0.1);
-            color: #52c41a;
-        }
-        
-        .action-icon.reports {
-            background-color: rgba(24, 144, 255, 0.1);
-            color: #1890ff;
-        }
-        
-        .action-icon.assign {
-            background-color: rgba(154, 79, 245, 0.1);
-            color: #9a4ff5;
-        }
-        
-        .action-icon.settings {
-            background-color: rgba(128, 128, 128, 0.1);
-            color: #808080;
-        }
-        
+        .action-icon.review { background-color: rgba(103, 58, 183, 0.1); color: #673ab7; }
+        .action-icon.schedule { background-color: rgba(82, 196, 26, 0.1); color: #52c41a; }
+        .action-icon.reports { background-color: rgba(24, 144, 255, 0.1); color: #1890ff; }
+        .action-icon.assign { background-color: rgba(154, 79, 245, 0.1); color: #9a4ff5; }
+        .action-icon.settings { background-color: rgba(128, 128, 128, 0.1); color: #808080; }
         .supervisor-banner {
             background-color: rgba(184, 134, 11, 0.1);
             border-left: 4px solid #b8860b;
@@ -288,26 +227,134 @@
             display: flex;
             align-items: flex-start;
         }
-        
-        .supervisor-banner i {
-            color: #b8860b;
-            margin-right: 12px;
-            font-size: 16px;
-            margin-top: 2px;
+        .supervisor-banner i { color: #b8860b; margin-right: 12px; font-size: 16px; margin-top: 2px; }
+        .supervisor-banner h3 { font-size: 14px; color: #b8860b; margin-bottom: 4px; font-weight: 600; }
+        .supervisor-banner p { font-size: 13px; color: rgba(184, 134, 11, 0.8); margin: 0; }
+
+        /* Notification Dropdown Styles */
+        .notification-icon-area {
+            position: relative;
+            display: inline-block;
         }
-        
-        .supervisor-banner h3 {
-            font-size: 14px;
-            color: #b8860b;
-            margin-bottom: 4px;
+        .notification-bell {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.2rem; /* Slightly larger bell */
+            cursor: pointer;
+            position: relative;
+            padding: 8px; /* More clickable area */
+        }
+        .notification-bell:hover {
+            color: var(--primary-blue);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background-color: #ff4d4f; /* Red badge */
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+            border: 1px solid white; /* White border for contrast */
+        }
+        .notifications-dropdown {
+            position: absolute;
+            top: calc(100% + 5px); /* Position below the bell with a small gap */
+            right: 0;
+            background-color: white;
+            border: 1px solid #e0e0e0; /* Softer border */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Standard shadow */
+            width: 340px; 
+            max-height: 450px; 
+            overflow-y: auto;
+            z-index: 1050; 
+            margin-top: 8px; /* Ensure gap */
+            display: none; /* Initially hidden */
+        }
+        .notifications-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notifications-header span {
             font-weight: 600;
+            font-size: 14px;
+            color: #333;
         }
-        
-        .supervisor-banner p {
-            font-size: 13px;
-            color: rgba(184, 134, 11, 0.8);
+        .mark-all-read-btn {
+            font-size: 12px;
+            color: var(--primary-blue);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 4px 8px;
+        }
+        .mark-all-read-btn:hover {
+            text-decoration: underline;
+        }
+        .notification-list-items {
+            list-style: none;
+            padding: 0;
             margin: 0;
         }
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; 
+            font-size: 13px;
+            line-height: 1.5;
+            transition: background-color 0.2s;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item:hover {
+            background-color: #f9f9f9; /* Lighter hover */
+        }
+        .notification-item.notification-unread {
+            background-color: #eef5ff; 
+            /* font-weight: 500; */ /* Removed to avoid text jump, message content can be bolder */
+        }
+        .notification-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .notification-content p {
+            margin: 0 0 4px 0;
+            color: #555; /* Standard text color */
+        }
+        .notification-item.notification-unread .notification-content p {
+            color: #333; /* Slightly darker for unread message */
+            font-weight: 500; /* Make unread message text bolder */
+        }
+        .notification-timestamp {
+            font-size: 11px;
+            color: #777; /* Lighter timestamp */
+        }
+        .delete-notification-btn {
+            background: none;
+            border: none;
+            color: #bbb; /* Lighter delete icon */
+            font-size: 18px; /* Slightly larger for easier click */
+            cursor: pointer;
+            padding: 0 3px; /* Minimal padding */
+            line-height: 1;
+            margin-left: 5px; /* Space from content */
+        }
+        .delete-notification-btn:hover {
+            color: #ff4d4f; /* Red on hover */
+        }
+
     </style>
 </head>
 <body>
@@ -319,7 +366,6 @@
     
     <div class="container">
         <div class="form-container">
-            <!-- Header with Logo and User Info -->
             <div class="header">
                 <div class="logo">TeaTalk</div>
                 <div class="user-info">
@@ -327,6 +373,37 @@
                         <i class="fas fa-user-shield"></i>
                         <span>Supervisor</span>
                     </div>
+
+                    <div class="notification-icon-area">
+                        <button id="notificationBell" type="button" class="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_notification_count > 0 %}
+                                <span id="notificationBadge" class="notification-badge">{{ unread_notification_count }}</span>
+                            {% endif %}
+                        </button>
+                        <div id="notificationsDropdown" class="notifications-dropdown">
+                            <div class="notifications-header">
+                                <span>Notifications</span>
+                                {% if unread_notification_count > 0 %}
+                                <button id="markAllReadBtn" class="mark-all-read-btn">Mark all as read</button>
+                                {% endif %}
+                            </div>
+                            <ul id="notificationList" class="notification-list-items">
+                                {% for notification in notifications|slice:":10" %} {# Show recent 10 notifications #}
+                                    <li class="notification-item {% if not notification.is_read %}notification-unread{% endif %}" data-id="{{ notification.id }}">
+                                        <div class="notification-content">
+                                            <p>{{ notification.message }}</p>
+                                            <small class="notification-timestamp">{{ notification.created_at|timesince }} ago</small>
+                                        </div>
+                                        <button class="delete-notification-btn" data-id="{{ notification.id }}" title="Delete notification">&times;</button>
+                                    </li>
+                                {% empty %}
+                                    <li class="notification-item-empty">No notifications yet.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
                     <form class="logout-form" method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="logout-btn">
@@ -337,7 +414,6 @@
                 </div>
             </div>
             
-            <!-- Supervisor Banner -->
             <div class="supervisor-banner">
                 <i class="fas fa-user-shield"></i>
                 <div>
@@ -348,7 +424,6 @@
             
             <div class="main-grid">
                 <div class="left-column">
-                    <!-- Supervised Students Card -->
                     <div class="card">
                         <div class="card-header">
                             My Psychology Students
@@ -358,7 +433,10 @@
                             {% for student in supervised_students %}
                             <div class="student-item">
                                 <div class="student-info">
-                                    <h3>{{ student.name }}</h3>
+                                    <h3>
+                                        {{ student.user.get_full_name|default:student.user.username }}
+                                        <span style="font-size: 0.8em; color: #666; font-weight: normal;">(ID: {{ student.anonymous_id }})</span>
+                                    </h3>
                                     <div class="student-details">
                                         Active cases: {{ student.active_cases_count }}
                                         {% if student.has_flagged_cases %}
@@ -378,6 +456,14 @@
                                         <i class="fas fa-comment"></i>
                                         Contact
                                     </button>
+                                    <form method="post" action="{% url 'unassign_student' %}" style="margin: 0;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                            Unassign
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             {% empty %}
@@ -388,7 +474,6 @@
                         </div>
                     </div>
                     
-                    <!-- Flagged Cases Card -->
                     <div class="card">
                         <div class="card-header flagged">
                             Flagged Cases
@@ -397,19 +482,32 @@
                         <div class="case-list">
                             {% for case in flagged_cases %}
                             <div class="case-item">
-                                <div class="case-info">
-                                    <h3>Case #{{ case.id }}</h3>
-                                    <div class="case-details">
-                                        Handled by: {{ case.psychology_student.name }}
-                                        <div class="flag-indicator">
+                                <div class="case-info" style="flex-grow: 1; margin-right: 10px;">
+                                     <h3>Flagged Chat #{{ case.id }} (User ID: {{ case.normal_user.anonymous_id }})</h3>
+                                    <div class="case-details" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                        <div class="flag-indicator" style="margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap;">
                                             <i class="fas fa-flag"></i>
-                                            <span>{{ case.flag_reason }}</span>
+                                            <strong style="margin-left: 5px;">{{ case.flag_reason_display }}</strong>
+                                            {% if case.reported_at_display %}
+                                                <span style="font-size: 0.8em; color: #777; margin-left: 10px;">(Reported: {{ case.reported_at_display|date:"d M Y, H:i" }})</span>
+                                            {% endif %}
                                         </div>
+                                        {% if case.report_details_preview %}
+                                        <p style="font-size: 0.9em; color: #555; margin-bottom: 5px; word-break: break-word;">
+                                            Details: <em>{{ case.report_details_preview }}</em>
+                                        </p>
+                                        {% endif %}
+                                        {% if case.reported_by_display_name and case.reported_by_display_name != 'N/A' and case.reported_by_display_name != 'Bilinmeyen Kullanıcı' %}
+                                        <p style="font-size: 0.8em; color: #777;">
+                                            Reported by: {{ case.reported_by_display_name }}
+                                        </p>
+                                        {% endif %}
                                     </div>
                                 </div>
-                                <button class="btn btn-danger review-case-btn" data-id="{{ case.id }}">
+                                <button class="btn btn-danger review-case-btn" 
+                                        onclick="location.href='{% url 'chat_with_id' conversation_id=case.id %}'">
                                     <i class="fas fa-exclamation-circle"></i>
-                                    Check
+                                    Review Case
                                 </button>
                             </div>
                             {% empty %}
@@ -422,7 +520,6 @@
                 </div>
                 
                 <div class="right-column">
-                    <!-- Stats Card -->
                     <div class="card">
                         <div class="card-header">Supervision Stats</div>
                         <div class="stats-grid">
@@ -446,11 +543,10 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Tools Card -->
                     <div class="card">
                         <div class="card-header">Tools</div>
                         
-                        <a href="#" class="action-link">
+                        <a href="{% url 'assign_students' %}" class="action-link">
                             <div class="action-icon assign">
                                 <i class="fas fa-user-plus"></i>
                             </div>
@@ -462,45 +558,123 @@
         </div>
     </div>
     
-    <script src="{% static 'chat_app/js/script.js' %}"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // View cases button handlers
-            var viewCasesButtons = document.querySelectorAll('.view-cases-btn');
-            if (viewCasesButtons.length > 0) {
-                viewCasesButtons.forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        var studentId = this.getAttribute('data-id');
-                        // Replace with actual URL once defined
-                        window.location.href = "/supervisor/student-cases/?student_id=" + studentId;
-                    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var viewCasesButtons = document.querySelectorAll('.view-cases-btn');
+        if (viewCasesButtons.length > 0) {
+            viewCasesButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var studentId = this.getAttribute('data-id');
+                    console.log("View cases for student ID:", studentId);
                 });
-            }
-            
-            // Review case button handlers
-            var reviewCaseButtons = document.querySelectorAll('.review-case-btn');
-            if (reviewCaseButtons.length > 0) {
-                reviewCaseButtons.forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        var caseId = this.getAttribute('data-id');
-                        // Replace with actual URL once defined
-                        window.location.href = "/supervisor/review-case/?case_id=" + caseId;
-                    });
+            });
+        }
+        
+        var reviewCaseButtons = document.querySelectorAll('.review-case-btn');
+        if (reviewCaseButtons.length > 0) {
+            reviewCaseButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var caseId = this.getAttribute('data-id');
+                    console.log("Review case ID:", caseId);
                 });
-            }
-            
-            // Contact button handlers
-            var contactButtons = document.querySelectorAll('.contact-btn');
-            if (contactButtons.length > 0) {
-                contactButtons.forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        var studentId = this.getAttribute('data-id');
-                        // Replace with actual URL once defined
-                        window.location.href = "/supervisor/contact-student/?student_id=" + studentId;
-                    });
+            });
+        }
+        
+        var contactButtons = document.querySelectorAll('.contact-btn');
+        if (contactButtons.length > 0) {
+            contactButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var studentId = this.getAttribute('data-id');
+                    var urlTemplate = "{% url 'initiate_supervisor_chat' student_id=0 %}"; 
+                    window.location.href = urlTemplate.replace('0', studentId);
                 });
+            });
+        }
+
+        const notificationBell = document.getElementById('notificationBell');
+        const notificationsDropdown = document.getElementById('notificationsDropdown');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const notificationList = document.getElementById('notificationList');
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+
+        if (notificationBell && notificationsDropdown) {
+            notificationBell.addEventListener('click', function(event) {
+                event.stopPropagation(); 
+                const isHidden = notificationsDropdown.style.display === 'none' || notificationsDropdown.style.display === '';
+                notificationsDropdown.style.display = isHidden ? 'block' : 'none';
+            });
+        }
+
+        document.addEventListener('click', function(event) {
+            if (notificationsDropdown && notificationBell && 
+                !notificationsDropdown.contains(event.target) && 
+                !notificationBell.contains(event.target)) {
+                notificationsDropdown.style.display = 'none';
             }
         });
+
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function() {
+                fetch("{% url 'mark_notifications_read' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('form.logout-form [name=csrfmiddlewaretoken]').value, // Get CSRF from a form
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (notificationBadge) {
+                            notificationBadge.style.display = 'none';
+                            notificationBadge.textContent = '0';
+                        }
+                        document.querySelectorAll('#notificationList .notification-item.notification-unread').forEach(item => {
+                            item.classList.remove('notification-unread');
+                        });
+                        markAllReadBtn.style.display = 'none'; 
+                    }
+                })
+                .catch(error => console.error('Error marking notifications as read:', error));
+            });
+        }
+
+        if (notificationList) {
+            notificationList.addEventListener('click', function(event) {
+                const deleteButton = event.target.closest('.delete-notification-btn');
+                if (deleteButton) {
+                    const notificationId = deleteButton.dataset.id;
+                    const notificationItem = deleteButton.closest('.notification-item');
+
+                    if (confirm('Are you sure you want to delete this notification?')) {
+                        let deleteUrl = "{% url 'delete_notification' notification_id=0 %}".replace('0', notificationId);
+                        fetch(deleteUrl, {
+                            method: 'POST', 
+                            headers: {
+                                'X-CSRFToken': document.querySelector('form.logout-form [name=csrfmiddlewaretoken]').value,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                notificationItem.remove();
+                                if (notificationList.children.length === 0) {
+                                    notificationList.innerHTML = '<li class="notification-item-empty">No notifications yet.</li>';
+                                }
+                                // Note: Unread count badge is not dynamically updated here for simplicity on single delete.
+                                // It will update fully on next 'mark all read' or page load.
+                            } else {
+                                alert('Failed to delete notification: ' + (data.error || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => console.error('Error deleting notification:', error));
+                    }
+                }
+            });
+        }
+    });
     </script>
 </body>
-</html> 
+</html>

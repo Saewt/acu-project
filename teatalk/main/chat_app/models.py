@@ -80,7 +80,6 @@ class Message(models.Model):
     content = encrypt(models.TextField())
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    is_flagged = models.BooleanField(default=False)
     read_at = models.DateTimeField(null=True, blank=True)
     is_system_message = models.BooleanField(default=False)
     
@@ -118,7 +117,7 @@ class Report(models.Model):
         ('other', 'Other'),
     ]
     
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='reports')
+    chat_session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, related_name='reports')
     reported_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     reason_category = models.CharField(max_length=20, choices=REPORT_REASONS, default='other')
     reason_details = models.TextField()
@@ -129,7 +128,7 @@ class Report(models.Model):
     action_taken = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Report for message {self.message.id} by {self.reported_by.anonymous_id}"
+        return f"Report for chat {self.chat_session.id} by {self.reported_by.anonymous_id}"
         
     def resolve(self, resolver, action_taken=None):
         self.is_resolved = True
@@ -152,5 +151,35 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.receiver.anonymous_id}"
+class SupervisorStudentChatSession(models.Model):
+    supervisor = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='supervisor_sessions', limit_choices_to={'is_supervisor': True})
+    student = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='student_sessions', limit_choices_to={'is_psych_student': True})
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_message_time = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    class Meta:
+        unique_together = ('supervisor', 'student')
+        ordering = ['-last_message_time']
+    def __str__(self):
+        return f"Supervisor {self.supervisor.user.username} - Student {self.student.user.username} Session"
+        
+    def update_last_message_time(self):
+            self.last_message_time = timezone.now()
+            self.save(update_fields=['last_message_time'])
+class SuperVisorStudentMessage(models.Model):
+    chat_session = models.ForeignKey(SupervisorStudentChatSession, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_supervisor_student_messages') 
+    
+    content = encrypt(models.TextField()) # or models.TextField() if no encryption
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    read_at = models.DateTimeField(null=True, blank=True)
 
-# Create your models here.
+    def __str__(self):
+        return f"Message from {self.sender.username} in session {self.chat_session.id} at {self.timestamp}"
+
+    def mark_as_read(self):
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save(update_fields=['is_read', 'read_at'])

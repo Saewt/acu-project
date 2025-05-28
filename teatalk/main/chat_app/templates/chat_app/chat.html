@@ -11,231 +11,98 @@
     <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
     <style>
         .message-sent {
-            background-color: #3b82f6;
-            color: white;
-            border-radius: 1rem;
-            padding: 0.75rem 1rem;
-            max-width: 80%;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            font-size: 1rem;
-            position: relative;
+            background-color: #3b82f6; color: white; border-radius: 1rem; padding: 0.75rem 1rem;
+            max-width: 80%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 1rem; position: relative;
             animation: slideInRight 0.3s ease-out;
         }
-        
         .message-received {
-            background-color: #d1d5db;
-            color: #1f2937;
-            border-radius: 1rem;
-            padding: 0.75rem 1rem;
-            max-width: 80%;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            font-size: 1rem;
-            position: relative;
+            background-color: #d1d5db; color: #1f2937; border-radius: 1rem; padding: 0.75rem 1rem;
+            max-width: 80%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 1rem; position: relative;
             animation: slideInLeft 0.3s ease-out;
         }
-        
-        .message-text {
-            line-height: 1.5;
-            word-break: break-word;
-        }
-        
-        .message-timestamp {
-            font-size: 0.75rem;
-            opacity: 0.75;
-            margin-top: 0.25rem;
-            text-align: right;
-        }
-        
-        .message-sent .message-timestamp {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .message-received .message-timestamp {
-            color: rgba(55, 65, 81, 0.7);
-        }
-
-        /* Enhanced animations */
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        /* Message status indicators */
-        .message-status {
-            font-size: 0.7rem;
-            margin-top: 0.25rem;
-            text-align: right;
-        }
-
-        .message-sending {
-            opacity: 0.7;
-        }
-
-        .message-sent .message-status {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Typing indicator */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background-color: #f3f4f6;
-            border-radius: 1rem;
-            margin-bottom: 1rem;
-            animation: slideInLeft 0.3s ease-out;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .typing-dot {
-            width: 0.5rem;
-            height: 0.5rem;
-            background-color: #9ca3af;
-            border-radius: 50%;
-            animation: pulse 1.4s ease-in-out infinite;
-        }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        /* Enhanced input area */
-        .input-container {
-            position: relative;
-        }
-
-        .char-counter {
-            position: absolute;
-            bottom: 0.5rem;
-            right: 0.5rem;
-            font-size: 0.75rem;
-            color: #9ca3af;
-            pointer-events: none;
-        }
-
-        .char-counter.warning {
-            color: #f59e0b;
-        }
-
-        .char-counter.error {
-            color: #ef4444;
-        }
-
-        /* Scroll to bottom button */
+        .message-text { line-height: 1.5; word-break: break-word; }
+        .message-timestamp { font-size: 0.75rem; opacity: 0.75; margin-top: 0.25rem; text-align: right; }
+        .message-sent .message-timestamp { color: rgba(255, 255, 255, 0.8); }
+        .message-received .message-timestamp { color: rgba(55, 65, 81, 0.7); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .message-status { font-size: 0.7rem; margin-top: 0.25rem; text-align: right; }
+        .message-sent .message-status { color: rgba(255, 255, 255, 0.6); }
+        .input-container { position: relative; }
+        .char-counter { position: absolute; bottom: 0.5rem; right: 0.5rem; font-size: 0.75rem; color: #9ca3af; pointer-events: none; }
         .scroll-to-bottom {
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            background-color: #3b82f6;
+            position: absolute; bottom: 1rem; right: 1rem; background-color: #3b82f6; color: white;
+            border-radius: 50%; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;
+            opacity: 0; transform: translateY(1rem); pointer-events: none;
+        }
+        .scroll-to-bottom.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .report-chat-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: white; padding: 20px; border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; display: none;
+            width: 350px; max-width: 90%;
+        }
+        .report-chat-popup.active { display: block; }
+        .report-chat-popup h4 { font-size: 1.2rem; margin-bottom: 15px; color: #333; font-weight: 600;}
+        .report-chat-popup label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #555; }
+        .report-chat-popup select,
+        .report-chat-popup textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;
+            margin-bottom: 15px; font-size: 0.9rem; box-sizing: border-box;
+        }
+        .report-chat-popup .actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .report-chat-popup .actions button {
+            padding: 10px 18px; border-radius: 6px; cursor: pointer;
+            font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s; border: none;
+        }
+        .report-chat-popup .actions .cancel-btn { background-color: #e0e0e0; color: #333; }
+        .report-chat-popup .actions .cancel-btn:hover { background-color: #d0d0d0; }
+        .report-chat-popup .actions .submit-btn { background-color: #ef4444; color: white; }
+        .report-chat-popup .actions .submit-btn:hover { background-color: #dc2626; }
+
+        .btn-flag-chat {
+            background-color: rgba(239, 68, 68, 0.1); 
+            color: #ef4444; 
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; 
+            font-size: 0.875rem; 
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: inline-flex; 
+            align-items: center; 
+        }
+        .btn-flag-chat:hover {
+            background-color: #ef4444; 
             color: white;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(1rem);
-            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+        .btn-flag-chat i, .btn-unreport-chat i { 
+            margin-right: 0.5rem;
         }
 
-        .scroll-to-bottom.visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
+        .btn-unreport-chat {
+            background-color: rgba(255, 165, 0, 0.1); 
+            color: #FFA500; 
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; 
+            font-size: 0.875rem; 
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            display: inline-flex; 
+            align-items: center; 
         }
-
-        .scroll-to-bottom:hover {
-            background-color: #2563eb;
-            transform: scale(1.05);
-        }
-
-        /* Enhanced mobile responsiveness */
-        @media (max-width: 640px) {
-            .message-sent,
-            .message-received {
-                max-width: 90%;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Message reactions */
-        .message-reactions {
-            display: flex;
-            gap: 0.25rem;
-            margin-top: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .reaction {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 1rem;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .reaction:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Loading states */
-        .loading-skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
+        .btn-unreport-chat:hover {
+            background-color: #FFA500; 
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen font-inter flex flex-col">
-    <!-- Navigation Bar -->
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
@@ -250,25 +117,23 @@
                         <i class="fas fa-shield-alt mr-1"></i>
                         <span>Anonymous Consultation</span>
                     </div>
+                    <button id="flagChatSessionBtn" class="btn-flag-chat">
+                        <i id="flagChatSessionBtnIcon" class="fas fa-flag"></i>
+                        <span id="flagChatSessionBtnText">Report Chat</span>
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Chat Container -->
     <div class="flex-1 flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <!-- Chat Header -->
         <div class="bg-white shadow-sm rounded-t-lg p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-bold text-blue-600">
                         Chat ID: {{ chat_session.id }}
                     </h2>
-                    <p class="text-sm text-gray-500">Partner ID: {% if user.profile == chat_session.normal_user %}
-                        {{ chat_session.psych_student.anonymous_id }}
-                        {% else %}
-                        {{ chat_session.normal_user.anonymous_id }}
-                        {% endif %}</p>
+                    <p class="text-sm text-gray-500">Partner ID: {% if user_profile == chat_session.normal_user %}{{ chat_session.psych_student.anonymous_id }}{% else %}{{ chat_session.normal_user.anonymous_id }}{% endif %}</p>
                     <p class="text-sm text-gray-500">Started: {{ chat_session.created_at|date:"j M Y" }}</p>
                     <div id="lastSeen" class="text-xs text-gray-400 mt-1"></div>
                 </div>
@@ -283,9 +148,7 @@
             </div>
         </div>
 
-        <!-- Chat Messages -->
         <div id="chatMessages" class="flex-1 bg-white overflow-y-auto p-4 relative" style="min-height: 400px; max-height: calc(100vh - 240px);">
-            <!-- Anonymity Notice -->
             <div class="flex justify-center mb-6">
                 <div class="bg-blue-50 text-blue-800 text-xs rounded-md px-3 py-2 max-w-md text-center">
                     <i class="fas fa-lock mr-1"></i>
@@ -293,37 +156,36 @@
                 </div>
             </div>
 
-            <!-- System Message -->
             <div class="flex justify-center mb-6">
                 <div class="bg-gray-100 text-gray-600 text-sm rounded-md px-4 py-2 max-w-md">
                     Consultation started. You are now connected anonymously.
                 </div>
             </div>
 
-            <!-- Messages from database -->
             {% for message in messages %}
                 {% if message.sender == user_profile %}
-                    <!-- Sent Message -->
                     <div class="flex justify-end mb-6" data-message-id="{{ message.id }}">
                         <div class="message-sent">
                             <p class="message-text">{{ message.content }}</p>
-                            <p class="message-timestamp">{{ message.timestamp|time:"H:i" }}</p>
+                            <div class="flex justify-end items-center text-xs mt-1">
+                                <span class="message-timestamp">{{ message.timestamp|time:"H:i" }}</span>
+                            </div>
                             <div class="message-status">
                                 <i class="fas fa-check text-xs"></i>
                             </div>
                         </div>
                     </div>
                 {% else %}
-                    <!-- Received Message -->
                     <div class="flex mb-6" data-message-id="{{ message.id }}">
                         <div class="message-received">
                             <p class="message-text">{{ message.content }}</p>
-                            <p class="message-timestamp">{{ message.timestamp|time:"H:i" }}</p>
+                            <div class="flex justify-end items-center text-xs mt-1">
+                                <span class="message-timestamp">{{ message.timestamp|time:"H:i" }}</span>
+                            </div>
                         </div>
                     </div>
                 {% endif %}
             {% empty %}
-                <!-- No messages yet -->
                 <div class="flex justify-center mb-6">
                     <div class="bg-gray-100 text-gray-600 text-sm rounded-md px-4 py-2 max-w-md">
                         No messages yet. Start the conversation!
@@ -331,27 +193,15 @@
                 </div>
             {% endfor %}
 
-            <!-- Typing Indicator -->
-            <div id="typingIndicator" class="typing-indicator" style="display: none;">
-                <div class="typing-dots">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                </div>
-                <span class="ml-2 text-sm text-gray-600">Partner is typing...</span>
-            </div>
-
-            <!-- Scroll to Bottom Button -->
             <div id="scrollToBottom" class="scroll-to-bottom">
                 <i class="fas fa-chevron-down"></i>
             </div>
         </div>
 
-        <!-- Chat Input -->
         <div class="bg-white shadow-sm rounded-b-lg p-4 border-t border-gray-200">
             <form id="messageForm" class="flex items-end">
                 {% csrf_token %}
-                <input type="hidden" id="conversationId" value="{{ conversation_id }}">
+                <input type="hidden" id="conversationIdInput" value="{{ chat_session.id }}">
                 <div class="flex-1 mr-4 input-container">
                     <textarea 
                         id="messageInput" 
@@ -379,25 +229,149 @@
         </div>
     </div>
 
-    <script src="{% static 'chat_app/js/script.js' %}"></script>
+    <div id="reportChatSessionPopup" class="report-chat-popup">
+        <h4>Report This Chat Session</h4>
+        <input type="hidden" id="reportChatSessionIdInput">
+        <div>
+            <label for="reportChatReasonSelect">Reason:</label>
+            <select id="reportChatReasonSelect">
+                {% for choice_value, choice_display in report_reasons %}
+                    <option value="{{ choice_value }}">{{ choice_display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="reportChatDetailsTextarea">Details (optional):</label>
+            <textarea id="reportChatDetailsTextarea" rows="4" placeholder="Provide more details about why you are reporting this chat session..."></textarea>
+        </div>
+        <div class="actions">
+            <button type="button" class="cancel-btn" onclick="closeChatSessionReportPopup()">Cancel</button>
+            <button type="button" class="submit-btn" onclick="submitChatSessionReport()">Report Session</button>
+        </div>
+    </div>
+
     <script>
         const currentUserProfileId = "{{ user_profile.id }}";
+        const chatSessionId = "{{ chat_session.id }}";
         let lastMsgId = 0;
-        let isTyping = false;
-        let typingTimeout;
-        let reconnectAttempts = 0;
-        let maxReconnectAttempts = 5;
         let pollingInterval = 3000;
-        
         const DEBUG = true;
+
+        let currentUserHasActiveReport = {{ user_has_active_report|yesno:"true,false" }};
+        const flagChatBtn = document.getElementById('flagChatSessionBtn');
+        const flagChatBtnText = document.getElementById('flagChatSessionBtnText');
+        const flagChatBtnIcon = document.getElementById('flagChatSessionBtnIcon');
+
         function log(message, data) {
             if (DEBUG) {
                 console.log(`[TeaTalk Debug] ${message}`, data || '');
             }
         }
 
+        function updateReportButtonState() {
+            if (!flagChatBtn || !flagChatBtnText || !flagChatBtnIcon) {
+                log('Report button elements not found for state update.');
+                return;
+            }
 
-        // Character counter functionality
+            if (currentUserHasActiveReport) {
+                flagChatBtnText.textContent = 'Unreport Chat';
+                flagChatBtnIcon.className = 'fas fa-comment-slash';
+                flagChatBtn.classList.remove('btn-flag-chat');
+                flagChatBtn.classList.add('btn-unreport-chat');
+                flagChatBtn.disabled = false;
+            } else {
+                flagChatBtnText.textContent = 'Report Chat';
+                flagChatBtnIcon.className = 'fas fa-flag';
+                flagChatBtn.classList.remove('btn-unreport-chat');
+                flagChatBtn.classList.add('btn-flag-chat');
+                flagChatBtn.disabled = false;
+            }
+            log('Report button state updated. Has active report:', currentUserHasActiveReport);
+        }
+
+        function openChatSessionReportPopup() {
+            const popup = document.getElementById('reportChatSessionPopup');
+            document.getElementById('reportChatSessionIdInput').value = chatSessionId;
+            popup.classList.add('active');
+        }
+
+        function closeChatSessionReportPopup() {
+            const popup = document.getElementById('reportChatSessionPopup');
+            popup.classList.remove('active');
+            document.getElementById('reportChatReasonSelect').value = 'other';
+            document.getElementById('reportChatDetailsTextarea').value = '';
+        }
+
+        function submitChatSessionReport() {
+            const sessionId = document.getElementById('reportChatSessionIdInput').value;
+            const reason = document.getElementById('reportChatReasonSelect').value;
+            const details = document.getElementById('reportChatDetailsTextarea').value;
+            
+            fetch('{% url "flag_chat_session" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    chat_session_id: sessionId,
+                    reason: reason,
+                    details: details
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Chat session reported successfully!');
+                    currentUserHasActiveReport = true;
+                } else {
+                    alert('Failed to report chat session: ' + (data.message || data.error || 'Unknown error'));
+                }
+                updateReportButtonState();
+                closeChatSessionReportPopup();
+            })
+            .catch(error => {
+                console.error('Error reporting chat session:', error);
+                alert('An error occurred while reporting the chat session.');
+                updateReportButtonState();
+                closeChatSessionReportPopup();
+            });
+        }
+
+        function submitUnreportChatSession() {
+            if (!confirm("Are you sure you want to un-report this chat session? This will remove your active report.")) {
+                return;
+            }
+            const sessionId = chatSessionId;
+
+            fetch('{% url "unreport_chat_session" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    chat_session_id: sessionId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Chat session un-reported successfully!');
+                    currentUserHasActiveReport = false;
+                } else {
+                    alert('Failed to un-report chat session: ' + (data.message || data.error || 'Unknown error'));
+                }
+                updateReportButtonState();
+            })
+            .catch(error => {
+                console.error('Error un-reporting chat session:', error);
+                alert('An error occurred while un-reporting the chat session.');
+                updateReportButtonState();
+            });
+        }
+        
         function updateCharCounter() {
             const messageInput = document.getElementById('messageInput');
             const charCounter = document.getElementById('charCounter');
@@ -405,134 +379,57 @@
             const maxLength = 1000;
             
             charCounter.textContent = `${currentLength}/${maxLength}`;
-            
-            if (currentLength > maxLength * 0.9) {
-                charCounter.className = 'char-counter error';
+            charCounter.className = 'char-counter';
+            if (currentLength > maxLength * 0.95) {
+                charCounter.classList.add('text-red-500');
             } else if (currentLength > maxLength * 0.8) {
-                charCounter.className = 'char-counter warning';
-            } else {
-                charCounter.className = 'char-counter';
+                charCounter.classList.add('text-yellow-500');
             }
         }
 
-        // Scroll to bottom functionality
-        function updateScrollButton() {
-            const chatMessages = document.getElementById('chatMessages');
-            const scrollButton = document.getElementById('scrollToBottom');
-            const isNearBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 100;
-            
-            if (isNearBottom) {
-                scrollButton.classList.remove('visible');
-            } else {
-                scrollButton.classList.add('visible');
-            }
+        function updateScrollButtonVisibility() {
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            const scrollToBottomBtn = document.getElementById('scrollToBottom');
+            const isNearBottom = chatMessagesContainer.scrollHeight - chatMessagesContainer.scrollTop - chatMessagesContainer.clientHeight < 100;
+            scrollToBottomBtn.classList.toggle('visible', !isNearBottom);
         }
 
-        function scrollToBottom(smooth = true) {
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.scrollTo({
-                top: chatMessages.scrollHeight,
+        function scrollToChatBottom(smooth = true) {
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            chatMessagesContainer.scrollTo({
+                top: chatMessagesContainer.scrollHeight,
                 behavior: smooth ? 'smooth' : 'auto'
             });
         }
 
-        // Enhanced typing indicator
-        function showTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            indicator.style.display = 'flex';
-            scrollToBottom();
-        }
-
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            indicator.style.display = 'none';
-        }
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const conversationId = document.getElementById('conversationId').value;
-            log('Conversation ID from form:', conversationId);
-            
-            
-            if (!conversationId) {
-                console.error('Missing conversation ID in chat view');
-                const pathParts = window.location.pathname.split('/');
-                const possibleId = pathParts[pathParts.length - 1];
-                if (possibleId && !isNaN(possibleId)) {
-                    document.getElementById('conversationId').value = possibleId;
-                    log('Recovered conversation ID from URL:', possibleId);
-                } else {
-                    alert('Error: Could not determine conversation ID. Redirecting to home...');
-                    window.location.href = "{% url 'home' %}";
-                }
-            }
-            
-            const chatMessages = document.getElementById('chatMessages');
-            if (chatMessages) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Add scroll event listener
-                chatMessages.addEventListener('scroll', updateScrollButton);
-            }
-            
-            // Scroll to bottom button click handler
-            document.getElementById('scrollToBottom').addEventListener('click', () => {
-                scrollToBottom();
-            });
-            
-            // Notification toggle
-            document.getElementById('toggleNotifications').addEventListener('click', function() {
-                notificationsEnabled = !notificationsEnabled;
-                this.innerHTML = notificationsEnabled ? 
-                    '<i class="fas fa-bell"></i>' : 
-                    '<i class="fas fa-bell-slash"></i>';
-                this.title = notificationsEnabled ? 'Disable notifications' : 'Enable notifications';
-            });
-            
-            const messageElements = document.querySelectorAll('.message-sent, .message-received');
-            if (messageElements.length > 0) {
-                log('Found existing messages:', messageElements.length);
-            }
-            
-            fetchNewMessages();
-        });
-        
         document.getElementById('messageForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const messageInput = document.getElementById('messageInput');
             const sendButton = document.getElementById('sendButton');
-            const message = messageInput.value.trim();
-            const conversationId = document.getElementById('conversationId').value;
-            
-            if (!conversationId) {
-                alert('Error: Missing conversation ID');
+            const messageContent = messageInput.value.trim();
+
+            if (!chatSessionId) {
+                alert('Error: Cannot send message, session ID is missing.');
                 return;
             }
             
-            if (message && message.length <= 1000) {
-                // Disable send button to prevent double sending
+            if (messageContent && messageContent.length <= 1000) {
                 sendButton.disabled = true;
+                const tempUiMessageId = `temp_${Date.now()}`;
                 
-                const tempId = `temp_${Date.now()}`;
-                
-                const chatMessages = document.getElementById('chatMessages');
-                const messageElement = document.createElement('div');
-                messageElement.className = 'flex justify-end mb-6 pending-message message-sending';
-                messageElement.id = tempId;
-                messageElement.innerHTML = `
-                    <div class="message-sent">
-                        <p class="message-text">${message}</p>
-                        <p class="message-timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}</p>
-                        <div class="message-status">
-                            <i class="fas fa-clock text-xs"></i>
-                        </div>
-                    </div>
-                `;
-                chatMessages.appendChild(messageElement);
+                appendMessageToUI({
+                    id: tempUiMessageId,
+                    content: messageContent,
+                    sender_id: currentUserProfileId,
+                    timestamp: new Date().toISOString(),
+                    is_current_user: true,
+                    status_icon: 'fa-clock'
+                });
                 
                 messageInput.value = '';
                 updateCharCounter();
-                scrollToBottom();
+                messageInput.style.height = 'auto';
+                scrollToChatBottom();
                 
                 fetch('{% url "send_message" %}', {
                     method: 'POST',
@@ -541,219 +438,213 @@
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                     },
                     body: JSON.stringify({
-                        conversation_id: conversationId,
-                        content: message
+                        conversation_id: chatSessionId,
+                        content: messageContent
                     })
                 })
                 .then(response => {
                     if (!response.ok) {
-                        const pendingMsg = document.getElementById(tempId);
-                        if (pendingMsg) pendingMsg.remove();
+                        const optimisticMsgEl = document.getElementById(tempUiMessageId);
+                        if (optimisticMsgEl) optimisticMsgEl.remove();
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
                     sendButton.disabled = false;
-                    
+                    const optimisticMsgEl = document.getElementById(tempUiMessageId);
+
                     if (data.error) {
                         console.error('Error sending message:', data.error);
                         alert('Error sending message: ' + data.error);
-                        const pendingMsg = document.getElementById(tempId);
-                        if (pendingMsg) pendingMsg.remove();
+                        if (optimisticMsgEl) optimisticMsgEl.remove();
                     } else {
-                        log('Message sent successfully:', data);
-                        const confirmedMsg = document.getElementById(tempId);
-                        if (confirmedMsg) {
-                            confirmedMsg.classList.remove('pending-message', 'message-sending');
-                            confirmedMsg.removeAttribute('id');
-                            confirmedMsg.setAttribute('data-message-id', data.message_id);
-                            
-                            // Update status to sent
-                            const statusElement = confirmedMsg.querySelector('.message-status');
-                            if (statusElement) {
-                                statusElement.innerHTML = '<i class="fas fa-check text-xs"></i>';
-                            }
+                        log('Message sent successfully, server data:', data);
+                        if (optimisticMsgEl) {
+                            optimisticMsgEl.dataset.messageId = data.message_id;
+                            optimisticMsgEl.id = `msg-${data.message_id}`;
+                            const statusIconEl = optimisticMsgEl.querySelector('.message-status i');
+                            if (statusIconEl) statusIconEl.className = 'fas fa-check text-xs';
                         }
-                        
                         if (data.message_id && data.message_id > lastMsgId) {
                             lastMsgId = data.message_id;
                         }
-                        
-                        localStorage.removeItem(`lastMessageTime_${conversationId}`);
-                        setTimeout(fetchNewMessages, 300);
                     }
                 })
                 .catch(error => {
-                    console.error('Error sending message:', error);
+                    console.error('Network or fetch error sending message:', error);
                     sendButton.disabled = false;
-                    
-                    // Show retry option
-                    const pendingMsg = document.getElementById(tempId);
-                    if (pendingMsg) {
-                        pendingMsg.innerHTML = `
-                            <div class="message-sent bg-red-500">
-                                <p class="message-text">${message}</p>
+                    const optimisticMsgEl = document.getElementById(tempUiMessageId);
+                    if (optimisticMsgEl) {
+                        optimisticMsgEl.innerHTML = `
+                            <div class="message-sent bg-red-500"> <p class="message-text">${messageContent}</p>
                                 <p class="message-timestamp">Failed to send</p>
                                 <div class="message-status">
-                                    <button onclick="retryMessage('${tempId}', '${message.replace(/'/g, "\\'")}', '${conversationId}')" class="text-xs underline">Retry</button>
+                                    <button onclick="retryMessage('${tempUiMessageId}', '${messageContent.replace(/'/g, "\\'")}')" class="text-xs underline">Retry</button>
                                 </div>
                             </div>
                         `;
                     }
                 });
+            } else if (messageContent.length > 1000) {
+                alert('Message is too long. Maximum 1000 characters allowed.');
             }
         });
 
-        // Retry failed message
-        window.retryMessage = function(tempId, message, conversationId) {
-            const failedMsg = document.getElementById(tempId);
-            if (failedMsg) failedMsg.remove();
-            
-            // Re-trigger send
-            document.getElementById('messageInput').value = message;
+        window.retryMessage = function(tempUiMessageId, messageContent) {
+            const failedMsgEl = document.getElementById(tempUiMessageId);
+            if (failedMsgEl) failedMsgEl.remove();
+            document.getElementById('messageInput').value = messageContent;
             document.getElementById('messageForm').dispatchEvent(new Event('submit'));
         };
         
         function fetchNewMessages() {
-            const conversationId = document.getElementById('conversationId').value;
-            const chatMessages = document.getElementById('chatMessages');
-            
-            if (!conversationId) {
-                console.error('No conversation ID found');
+            if (!chatSessionId) {
+                log('Polling stopped: No Chat Session ID.');
                 return;
             }
+            const fetchUrl = `{% url "get_messages" %}?conversation_id=${chatSessionId}&since=${lastMsgId}`;
+            log('Fetching new messages since ID:', lastMsgId);
             
-            let lastMessageTime = localStorage.getItem(`lastMessageTime_${conversationId}`);
-            if (!lastMessageTime || lastMessageTime === 'undefined' || lastMessageTime === 'null') {
-                lastMessageTime = '0';
-            }
-            
-            log('Fetching messages since:', lastMessageTime);
-            
-            fetch(`{% url "get_messages" %}?conversation_id=${conversationId}&since=${encodeURIComponent(lastMessageTime)}`)
+            fetch(fetchUrl)
             .then(response => {
                 if (!response.ok) {
-                    log('Error response from server:', response.status);
-                    
-                    if (response.status === 400 && lastMessageTime !== '0') {
-                        log('Resetting timestamp due to error');
-                        localStorage.removeItem(`lastMessageTime_${conversationId}`);
-                        setTimeout(fetchNewMessages, 500);
-                    }
+                    log('Error response from get_messages server:', response.status, response.statusText);
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.error) {
-                    console.error('Error fetching messages:', data.error);
+                    console.error('Error fetching messages from API:', data.error);
                     return;
                 }
-                
-                log('Received message data:', data);
+                log('Received messages data from API:', data);
                 
                 if (data.messages && data.messages.length > 0) {
                     log('New messages count:', data.messages.length);
-                    let addedNewMessage = false;
-                    
-                    data.messages.sort((a, b) => a.id - b.id);
-                    
+                    let newMessagesWereAdded = false;
                     data.messages.forEach(message => {
-                        const existingMsg = document.querySelector(`[data-message-id="${message.id}"]`);
-                        if (!existingMsg) {
-                            addedNewMessage = true;
-                            const messageElement = document.createElement('div');
-                            const isSent = message.is_current_user;
-                            messageElement.className = isSent ? 'flex justify-end mb-6' : 'flex mb-6';
-                            messageElement.setAttribute('data-message-id', message.id);
-                            messageElement.innerHTML = `
-                                <div class="${isSent ? 'message-sent' : 'message-received'}">
-                                    <p class="message-text">${message.content}</p>
-                                    <p class="message-timestamp">${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}</p>
-                                    ${isSent ? '<div class="message-status"><i class="fas fa-check text-xs"></i></div>' : ''}
-                                </div>
-                            `;
-                            chatMessages.appendChild(messageElement);
-                            
-                            // Show notification for received messages
-                            if (!isSent) {
-                                showNotification('New Message', message.content.substring(0, 50) + (message.content.length > 50 ? '...' : ''));
-                            }
-                            
+                        if (!document.querySelector(`[data-message-id="${message.id}"]`)) {
+                            appendMessageToUI({
+                                ...message,
+                                is_current_user: message.sender_id == currentUserProfileId,
+                                status_icon: message.sender_id == currentUserProfileId ? 'fa-check' : null
+                            });
+                            newMessagesWereAdded = true;
                             if (message.id > lastMsgId) {
                                 lastMsgId = message.id;
                             }
                         }
                     });
-                    
-                    if (addedNewMessage) {
-                        scrollToBottom();
+                    if (newMessagesWereAdded) {
+                        scrollToChatBottom();
                     }
-                }
-                
-                if (data.last_time) {
-                    log('Updating last message time to:', data.last_time);
-                    localStorage.setItem(`lastMessageTime_${conversationId}`, data.last_time);
-                }
-
-                // Update last seen status
-                if (data.partner_last_seen) {
-                    const lastSeenElement = document.getElementById('lastSeen');
-                    const lastSeenTime = new Date(data.partner_last_seen);
-                    lastSeenElement.textContent = `Last seen: ${lastSeenTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
                 }
             })
             .catch(error => {
-                console.error('Error fetching messages:', error);
-                
-                // Implement exponential backoff for reconnection
-                if (reconnectAttempts < maxReconnectAttempts) {
-                    reconnectAttempts++;
-                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-                    setTimeout(() => {
-                        fetchNewMessages();
-                    }, delay);
-                }
+                console.error('Network or fetch error during get_messages:', error);
             });
         }
         
-        let messagePollingInterval = setInterval(fetchNewMessages, pollingInterval);
-        
+        function appendMessageToUI(msgData) {
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = msgData.is_current_user ? 'flex justify-end mb-6' : 'flex mb-6';
+            messageDiv.dataset.messageId = msgData.id;
+            if (msgData.id.toString().startsWith('temp_')) {
+                 messageDiv.id = msgData.id;
+            }
+
+            const messageTimestamp = new Date(msgData.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
+            let statusHTML = '';
+            if (msgData.is_current_user && msgData.status_icon) {
+                statusHTML = `<div class="message-status"><i class="fas ${msgData.status_icon} text-xs"></i></div>`;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="${msgData.is_current_user ? 'message-sent' : 'message-received'}">
+                    <p class="message-text">${msgData.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                    <div class="flex justify-end items-center text-xs mt-1">
+                        <span class="message-timestamp">${messageTimestamp}</span>
+                    </div>
+                    ${statusHTML}
+                </div>
+            `;
+            chatMessagesContainer.appendChild(messageDiv);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Chat Session ID for this page:', chatSessionId);
+            
+            if (!chatSessionId) {
+                console.error('Critical Error: Missing Chat Session ID. Chat functionality will be disabled.');
+                alert('Error: Could not determine chat session ID. Please try returning to the dashboard and re-entering the chat.');
+                const messageInput = document.getElementById('messageInput');
+                const sendButton = document.getElementById('sendButton');
+                if(messageInput) messageInput.disabled = true;
+                if(sendButton) sendButton.disabled = true;
+                return;
+            }
+            
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            if (chatMessagesContainer) {
+                scrollToChatBottom(false);
+                chatMessagesContainer.addEventListener('scroll', updateScrollButtonVisibility);
+            }
+            
+            const scrollToBottomBtn = document.getElementById('scrollToBottom');
+            if(scrollToBottomBtn) {
+                scrollToBottomBtn.addEventListener('click', () => {
+                    scrollToChatBottom();
+                });
+            }
+
+            if (flagChatBtn) {
+                updateReportButtonState();
+                flagChatBtn.addEventListener('click', function() {
+                    log('Flag/Unflag button clicked. Has active report:', currentUserHasActiveReport);
+                    if (currentUserHasActiveReport) {
+                        submitUnreportChatSession();
+                    } else {
+                        openChatSessionReportPopup();
+                    }
+                });
+            } else {
+                log('Report button (flagChatSessionBtn) not found.');
+            }
+            
+            const messageInputEl = document.getElementById('messageInput');
+            if(messageInputEl) {
+                messageInputEl.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                    updateCharCounter();
+                });
+                messageInputEl.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        document.getElementById('messageForm').dispatchEvent(new Event('submit'));
+                    }
+                });
+                updateCharCounter();
+            }
+            
+            fetchNewMessages();
+        });
+
+        let messagePollingIntervalId = setInterval(fetchNewMessages, pollingInterval);
         
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'hidden') {
-                clearInterval(messagePollingInterval);
-                log('Polling paused - page hidden');
+                clearInterval(messagePollingIntervalId);
+                log('Message polling paused - page hidden');
             } else {
-                messagePollingInterval = setInterval(fetchNewMessages, pollingInterval);
-                log('Polling resumed - page visible');
                 fetchNewMessages();
+                messagePollingIntervalId = setInterval(fetchNewMessages, pollingInterval);
+                log('Message polling resumed - page visible');
             }
         });
-        
-        const messageInput = document.getElementById('messageInput');
-        
-        messageInput.addEventListener('input', function() {
-            
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            
-            
-            updateCharCounter();
-            handleTyping();
-        });
-
-        messageInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                document.getElementById('messageForm').dispatchEvent(new Event('submit'));
-            }
-        });
-
-        
-        updateCharCounter();
-        // todo typing indicator,read status
         
     </script>
 </body>

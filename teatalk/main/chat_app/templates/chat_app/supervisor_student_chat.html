@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTalk - Supervisor Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'chat_app/css/styles.css' %}">
+    <style>
+        .message-sent {
+            background-color: #3b82f6; /* Blue for supervisor */
+            color: white;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            max-width: 80%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 1rem;
+            position: relative;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .message-received {
+            background-color: #d1d5db; /* Gray for student */
+            color: #1f2937;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            max-width: 80%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 1rem;
+            position: relative;
+            animation: slideInLeft 0.3s ease-out;
+        }
+        
+        .message-text {
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        
+        .message-timestamp {
+            font-size: 0.75rem;
+            opacity: 0.75;
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+        
+        .message-sent .message-timestamp { color: rgba(255, 255, 255, 0.8); }
+        .message-received .message-timestamp { color: rgba(55, 65, 81, 0.7); }
+
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .message-status { font-size: 0.7rem; margin-top: 0.25rem; text-align: right; }
+        .message-sending { opacity: 0.7; }
+        .message-sent .message-status { color: rgba(255, 255, 255, 0.6); }
+
+        .input-container { position: relative; }
+        .char-counter { position: absolute; bottom: 0.5rem; right: 0.5rem; font-size: 0.75rem; color: #9ca3af; pointer-events: none; }
+        .char-counter.warning { color: #f59e0b; }
+        .char-counter.error { color: #ef4444; }
+
+        .scroll-to-bottom {
+            position: absolute; bottom: 1rem; right: 1rem; background-color: #3b82f6; color: white;
+            border-radius: 50%; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;
+            opacity: 0; transform: translateY(1rem); pointer-events: none;
+        }
+        .scroll-to-bottom.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .scroll-to-bottom:hover { background-color: #2563eb; transform: scale(1.05); }
+
+        @media (max-width: 640px) {
+            .message-sent, .message-received { max-width: 90%; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-inter flex flex-col">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="text-gray-500 hover:text-gray-700 mr-4 transition-colors duration-200">
+                        <i class="fas fa-arrow-left"></i>
+                        <span class="ml-2">Back to Supervisor Dashboard</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium flex items-center">
+                        <i class="fas fa-chalkboard-teacher mr-1"></i>
+                        <span>Supervisor-Student Chat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="bg-white shadow-sm rounded-t-lg p-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-blue-600">
+                        Chat with: {{ chat_session.student.user.get_full_name|default:chat_session.student.user.username }}
+                    </h2>
+                    <p class="text-sm text-gray-500">Student ID: {{ chat_session.student.anonymous_id }}</p>
+                    <p class="text-sm text-gray-500">Session ID: {{ chat_session.id }}</p>
+                    <p class="text-sm text-gray-500">Started: {{ chat_session.created_at|date:"j M Y" }}</p>
+                </div>
+                <div class="flex space-x-2">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div id="chatMessages" class="flex-1 bg-white overflow-y-auto p-4 relative" style="min-height: 400px; max-height: calc(100vh - 240px);">
+            <div class="flex justify-center mb-6">
+                <div class="bg-yellow-50 text-yellow-800 text-xs rounded-md px-3 py-2 max-w-md text-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    {% if user_profile.is_supervisor %} This is a private chat with your student.
+                    {% else %} This is a private chat with your supervisor.
+                    {% endif %}
+                    <span class="font-semibold">{{ chat_session.student.user.get_full_name|default:chat_session.student.user.username }}</span>.
+                    {% if user_profile.is_supervisor %} You can send messages to the student here.
+                    {% else %} You can view messages from your supervisor here.
+                    {% endif %}
+                </div>
+            </div>
+
+            {% for message in messages_for_supervisor_chat %}
+                {% if message.sender == user_profile %}
+                    <div class="flex justify-end mb-6" data-message-id="{{ message.id }}">
+                        <div class="message-sent">
+                            <p class="message-text">{{ message.content }}</p>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="message-timestamp">{{ message.timestamp|time:"H:i" }}</span>
+                            </div>
+                            <div class="message-status">
+                                <i class="fas fa-check text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex mb-6" data-message-id="{{ message.id }}">
+                        <div class="message-received">
+                            <p class="message-text">{{ message.content }}</p>
+                             <div class="flex justify-between items-center text-xs">
+                                <span class="message-timestamp">{{ message.timestamp|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <div class="flex justify-center mb-6">
+                    <div class="bg-gray-100 text-gray-600 text-sm rounded-md px-4 py-2 max-w-md">
+                        No messages yet. Start the conversation!
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div id="scrollToBottom" class="scroll-to-bottom">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-sm rounded-b-lg p-4 border-t border-gray-200">
+            <form id="messageForm" class="flex items-end">
+                {% csrf_token %}
+                <input type="hidden" id="conversationId" value="{{ chat_session.id }}"> 
+                <div class="flex-1 mr-4 input-container">
+                    <textarea 
+                        id="messageInput" 
+                        class="w-full border border-gray-300 rounded-lg p-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200" 
+                        placeholder="Type your message to the student..." 
+                        rows="1"
+                        maxlength="1000"
+                        aria-label="Message input"></textarea>
+                    <div id="charCounter" class="char-counter">0/1000</div>
+                </div>
+                <button type="submit"
+                        id="sendButton"
+                        class="bg-blue-600 text-white rounded-lg p-3 flex-shrink-0
+                               hover:bg-blue-700 transition duration-150 ease-in-out
+                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                               active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const currentUserProfileId = "{{ user_profile.id }}";
+        let lastMsgId = 0;
+        let pollingIntervalMs = 3000;
+
+        const DEBUG = true;
+        function log(message, data) {
+            if (DEBUG) console.log(`[SupervisorChat Debug] ${message}`, data || '');
+        }
+
+        function updateCharCounter() {
+            const messageInput = document.getElementById('messageInput');
+            const charCounter = document.getElementById('charCounter');
+            const currentLength = messageInput.value.length;
+            const maxLength = 1000;
+            
+            charCounter.textContent = `${currentLength}/${maxLength}`;
+            charCounter.className = 'char-counter';
+            if (currentLength > maxLength * 0.9) charCounter.classList.add('error');
+            else if (currentLength > maxLength * 0.8) charCounter.classList.add('warning');
+        }
+
+        function updateScrollButtonVisibility() {
+            const chatMessagesEl = document.getElementById('chatMessages');
+            const scrollButtonEl = document.getElementById('scrollToBottom');
+            const isNearBottom = chatMessagesEl.scrollTop + chatMessagesEl.clientHeight >= chatMessagesEl.scrollHeight - 100;
+            scrollButtonEl.classList.toggle('visible', !isNearBottom);
+        }
+
+        function scrollToChatBottom(smooth = true) {
+            const chatMessagesEl = document.getElementById('chatMessages');
+            chatMessagesEl.scrollTo({ top: chatMessagesEl.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessagesEl = document.getElementById('chatMessages');
+            if (chatMessagesEl) {
+                scrollToChatBottom(false);
+                chatMessagesEl.addEventListener('scroll', updateScrollButtonVisibility);
+            }
+            
+            document.getElementById('scrollToBottom').addEventListener('click', () => scrollToChatBottom());
+            
+            const messageInputEl = document.getElementById('messageInput');
+            messageInputEl.addEventListener('input', updateCharCounter);
+            messageInputEl.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+            messageInputEl.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    document.getElementById('messageForm').dispatchEvent(new Event('submit'));
+                }
+            });
+            updateCharCounter();
+
+            fetchSupervisorMessages(); 
+            setInterval(fetchSupervisorMessages, pollingIntervalMs);
+        });
+        
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const messageContent = messageInput.value.trim();
+            const sessionId = document.getElementById('conversationId').value;
+
+            if (!sessionId) {
+                alert('Error: Missing session ID.');
+                return;
+            }
+            if (!messageContent || messageContent.length > 1000) {
+                alert('Message is empty or too long.');
+                return;
+            }
+
+            sendButton.disabled = true;
+            const tempUiMsgId = `temp_${Date.now()}`;
+
+            appendMessageToChatUI({
+                id: tempUiMsgId,
+                content: messageContent,
+                sender_id: currentUserProfileId,
+                timestamp: new Date().toISOString(),
+                is_current_user: true,
+                status: 'sending'
+            });
+            messageInput.value = '';
+            updateCharCounter();
+            messageInput.style.height = 'auto';
+            scrollToChatBottom();
+
+            fetch("{% url 'send_supervisor_message' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    content: messageContent
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                sendButton.disabled = false;
+                if (data.error) {
+                    log('Error sending supervisor message:', data.error);
+                    alert('Error: ' + data.error);
+                    document.getElementById(tempUiMsgId)?.remove();
+                } else {
+                    log('Supervisor message sent successfully:', data);
+                    const confirmedMsgEl = document.getElementById(tempUiMsgId);
+                    if(confirmedMsgEl){
+                        confirmedMsgEl.dataset.messageId = data.message_id;
+                        confirmedMsgEl.id = `msg-${data.message_id}`;
+                        const statusEl = confirmedMsgEl.querySelector('.message-status i');
+                        if(statusEl) statusEl.className = 'fas fa-check text-xs';
+                    }
+                    if (data.message_id > lastMsgId) lastMsgId = data.message_id;
+                }
+            })
+            .catch(error => {
+                sendButton.disabled = false;
+                log('Network/fetch error sending supervisor message:', error);
+                alert('Failed to send message. Please try again.');
+                document.getElementById(tempUiMsgId)?.remove();
+            });
+        });
+
+        function fetchSupervisorMessages() {
+            const sessionId = document.getElementById('conversationId').value;
+            if (!sessionId) {
+                log('Cannot fetch messages, no session ID found.');
+                return;
+            }
+
+            let fetchUrl = `{% url 'get_supervisor_messages' %}?session_id=${sessionId}&since_id=${lastMsgId}`;
+
+            fetch(fetchUrl)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    log('Error fetching supervisor messages:', data.error);
+                    return;
+                }
+                if (data.messages && data.messages.length > 0) {
+                    log('Received new supervisor messages:', data.messages.length);
+                    let newMessagesAdded = false;
+                    data.messages.forEach(message => {
+                        if (!document.querySelector(`[data-message-id="${message.id}"]`)) {
+                            appendMessageToChatUI({
+                                ...message,
+                                is_current_user: message.sender_id == currentUserProfileId
+                            });
+                            if (message.id > lastMsgId) lastMsgId = message.id;
+                            newMessagesAdded = true;
+                        }
+                    });
+                    if (newMessagesAdded) scrollToChatBottom();
+                }
+            })
+            .catch(error => {
+                log('Error fetching supervisor messages:', error);
+            });
+        }
+
+        function appendMessageToChatUI(message) {
+            const chatMessagesEl = document.getElementById('chatMessages');
+            const messageElement = document.createElement('div');
+            const isSentByCurrentUser = message.is_current_user;
+
+            messageElement.className = isSentByCurrentUser ? 'flex justify-end mb-6' : 'flex mb-6';
+            messageElement.dataset.messageId = message.id;
+            if (message.id.toString().startsWith('temp_')) messageElement.id = message.id;
+
+
+            let timestamp = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
+            let statusIconClass = 'fas fa-check text-xs';
+            if (message.status === 'sending') statusIconClass = 'fas fa-clock text-xs';
+
+
+            messageElement.innerHTML = `
+                <div class="${isSentByCurrentUser ? 'message-sent' : 'message-received'}">
+                    <p class="message-text">${message.content}</p>
+                    <div class="flex justify-between items-center text-xs mt-1">
+                        <span class="message-timestamp">${timestamp}</span>
+                    </div>
+                    ${isSentByCurrentUser ? `<div class="message-status"><i class="${statusIconClass}"></i></div>` : ''}
+                </div>
+            `;
+            chatMessagesEl.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>

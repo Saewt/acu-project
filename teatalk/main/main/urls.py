@@ -38,26 +38,12 @@ urlpatterns = [
     path('login/', chat_views.login_view, name='login_view'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login_view'), name='logout'),
     
-    # Şifre sıfırlama
-    path('password_reset/', auth_views.PasswordResetView.as_view(
-        template_name='registration/password_reset_form.html',
-        email_template_name='registration/password_reset_email.html',
-        subject_template_name='registration/password_reset_subject.txt'
-    ), name='password_reset'),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(
-        template_name='registration/password_reset_done.html'
-    ), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
-        template_name='registration/password_reset_confirm.html'
-    ), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
-        template_name='registration/password_reset_complete.html'
-    ), name='password_reset_complete'),
-    
     # Chat sayfaları
     path('chat/', chat_views.chat, name='chat'),
     path('chat/<int:conversation_id>/', chat_views.chat, name='chat_with_id'),
     path('chat/<int:conversation_id>/delete/', chat_views.delete_chat, name='delete_chat'),
+    path('chat/flag_session',chat_views.flag_chat_session, name='flag_chat_session'),
+    path('chat/unreport_session',chat_views.unreport_chat_session, name='unreport_chat_session'),
     
     # Find psychology students and start consultation
     path('find/', login_required(chat_views.find_psych_student), name='find_psych_student'),
@@ -65,10 +51,16 @@ urlpatterns = [
     path('accept-request/', login_required(chat_views.accept_request), name='accept_request'),
     path('reject-request/', login_required(chat_views.reject_request), name='reject_request'),
     path('delete-request/', login_required(chat_views.delete_request), name='delete_request'),
-    path('psychology-home/', login_required(chat_views.psychology_student_home), name='psychology_student_home'),
-    
+   # path('psychology-home/', login_required(chat_views.psychology_student_home), name='psychology_student_home'),
+    path('assign-students/', login_required(chat_views.assign_students), name='assign_students'),
+    path('unassign-student/', login_required(chat_views.unassign_student), name='unassign_student'),
     # API
     path('api/send-message/', chat_views.send_message, name='send_message'),
     path('api/get-messages/', chat_views.get_messages, name='get_messages'),
-
+    #supervisor
+    path('supervisor/initiate_chat_with_student/<int:student_id>/', login_required(chat_views.supervisor_init_or_open_chat), name='initiate_supervisor_chat'),
+    path('supervisor/chat_with_student/<int:session_id>/', login_required(chat_views.supervisor_student_chat_interface), name='supervisor_student_chat_interface'),
+    path('supervisor/api/send_message/', chat_views.send_supervisor_message, name='send_supervisor_message'),
+    path('supervisor/api/get_messages/', chat_views.get_supervisor_messages, name='get_supervisor_messages'),
+    path('student/initiate_chat_with_supervisor/', login_required(chat_views.student_initiate_chat_with_supervisor), name='initiate_student_chat'),
 ]
